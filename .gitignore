@@ -51,3 +51,5 @@ app.*.map.json
 **/service-account*.json
 keys/
 **/keys/
+Runner/GoogleService-Info.plist
+firebase_options.dart
