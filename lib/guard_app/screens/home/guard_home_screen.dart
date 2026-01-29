@@ -1,19 +1,21 @@
+import 'package:autogateqr/guard_app/screens/registration/guard_waiting_checkout_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../providers/auth_provider.dart';
-import '../../../providers/check_in_provider.dart';
+
+import '../../../core/theme/app_colors.dart';
 import '../../../models/gate_access_registration_model.dart';
 import '../../../models/visitor_access_log_model.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/check_in_provider.dart';
 import '../../../services/firestore_service.dart';
-import '../../../core/theme/app_colors.dart';
-import '../scanner/qr_scanner_screen.dart';
-import '../registration/guard_manual_registration_screen.dart';
-import '../registration/guard_registration_list_screen.dart';
-import '../registration/guard_visiting_list_screen.dart';
-import '../registration/guard_today_registration_screen.dart';
 import '../history/guard_visitor_access_history_screen.dart';
 import '../history/visitor_access_log_detail_screen.dart';
 import '../profile/guard_profile_detail_screen.dart';
+import '../registration/guard_manual_registration_screen.dart';
+import '../registration/guard_registration_list_screen.dart';
+import '../registration/guard_today_registration_screen.dart';
+import '../registration/guard_visiting_list_screen.dart';
+import '../scanner/qr_scanner_screen.dart';
 
 class GuardHomeScreen extends StatefulWidget {
   const GuardHomeScreen({super.key});
@@ -82,16 +84,11 @@ class _GuardHomeScreenState extends State<GuardHomeScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const QRScannerScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const QRScannerScreen()),
           );
         },
         backgroundColor: AppColors.guardPrimary,
-        child: const Icon(
-          Icons.qr_code_scanner,
-          size: 36,
-        ),
+        child: const Icon(Icons.qr_code_scanner, size: 36),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
@@ -136,13 +133,9 @@ class _DashboardTab extends StatelessWidget {
                         child: _buildTotalRegistrationsStatCard(context),
                       ),
                       const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildVisitingStatCard(context),
-                      ),
+                      Expanded(child: _buildVisitingStatCard(context)),
                       const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildCheckoutStatCard(context),
-                      ),
+                      Expanded(child: _buildCheckoutStatCard(context)),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -150,10 +143,7 @@ class _DashboardTab extends StatelessWidget {
                   // Quick actions
                   const Text(
                     'Thao tác nhanh',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -239,23 +229,53 @@ class _DashboardTab extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  // History card - full width
-                  _buildActionCard(
-                    context,
-                    icon: Icons.history,
-                    title: 'Lịch sử Check-in/out',
-                    subtitle: 'Xem lịch sử ra vào khách',
-                    color: Colors.purple,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const GuardVisitorAccessHistoryScreen(),
+
+                  Row(
+                    children: [
+                      // History card
+                      Expanded(
+                        child: _buildActionCard(
+                          context,
+                          icon: Icons.history,
+                          title: 'Lịch sử Check-in/out',
+                          subtitle: 'Xem lịch sử ra vào khách',
+                          color: Colors.purple,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const GuardVisitorAccessHistoryScreen(),
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
+                      ),
+
+                      // Waiting checkout card
+                      const SizedBox(width: 12),
+
+                      Expanded(
+                        child: _buildActionCard(
+                          context,
+                          icon: Icons.hourglass_empty,
+                          title: 'Khách chưa checkout',
+                          subtitle: 'Khách chưa ra khỏi cổng',
+                          color: AppColors.warning,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const GuardWaitingCheckoutListScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
+
                   const SizedBox(height: 24),
 
                   // Gates list card
@@ -273,7 +293,8 @@ class _DashboardTab extends StatelessWidget {
                         padding: const EdgeInsets.all(12),
                         child: Column(
                           children: provider.gates.map((gate) {
-                            final isSelected = provider.selectedGate?.id == gate.id;
+                            final isSelected =
+                                provider.selectedGate?.id == gate.id;
                             IconData gateIcon;
                             Color gateColor;
 
@@ -297,13 +318,23 @@ class _DashboardTab extends StatelessWidget {
                               },
                               borderRadius: BorderRadius.circular(8),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 8,
+                                ),
                                 decoration: BoxDecoration(
-                                  color: isSelected ? AppColors.guardPrimary.withValues(alpha: 0.1) : null,
+                                  color: isSelected
+                                      ? AppColors.guardPrimary.withValues(
+                                          alpha: 0.1,
+                                        )
+                                      : null,
                                   borderRadius: BorderRadius.circular(8),
                                   border: isSelected
-                                    ? Border.all(color: AppColors.guardPrimary, width: 1.5)
-                                    : null,
+                                      ? Border.all(
+                                          color: AppColors.guardPrimary,
+                                          width: 1.5,
+                                        )
+                                      : null,
                                 ),
                                 child: Row(
                                   children: [
@@ -313,18 +344,25 @@ class _DashboardTab extends StatelessWidget {
                                         color: gateColor.withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Icon(gateIcon, color: gateColor, size: 20),
+                                      child: Icon(
+                                        gateIcon,
+                                        color: gateColor,
+                                        size: 20,
+                                      ),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             gate.gateName,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,
-                                              color: isSelected ? AppColors.guardPrimary : null,
+                                              color: isSelected
+                                                  ? AppColors.guardPrimary
+                                                  : null,
                                             ),
                                           ),
                                           Text(
@@ -509,10 +547,7 @@ class _DashboardTab extends StatelessWidget {
               ),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 11, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -547,19 +582,11 @@ class _DashboardTab extends StatelessWidget {
                 child: Icon(icon, color: color, size: 28),
               ),
               const SizedBox(height: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
           ),
@@ -588,9 +615,7 @@ class _DashboardTab extends StatelessWidget {
           return Card(
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: Center(
-                child: Text('Lỗi: ${snapshot.error}'),
-              ),
+              child: Center(child: Text('Lỗi: ${snapshot.error}')),
             ),
           );
         }
@@ -604,11 +629,7 @@ class _DashboardTab extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
-                    Icon(
-                      Icons.inbox_outlined,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
+                    Icon(Icons.inbox_outlined, size: 48, color: Colors.grey),
                     SizedBox(height: 8),
                     Text(
                       'Chưa có lịch sử ra/vào',
@@ -622,13 +643,18 @@ class _DashboardTab extends StatelessWidget {
         }
 
         return Column(
-          children: logs.map((log) => _buildVisitorLogCardSmall(context, log)).toList(),
+          children: logs
+              .map((log) => _buildVisitorLogCardSmall(context, log))
+              .toList(),
         );
       },
     );
   }
 
-  Widget _buildVisitorLogCardSmall(BuildContext context, VisitorAccessLogModel log) {
+  Widget _buildVisitorLogCardSmall(
+    BuildContext context,
+    VisitorAccessLogModel log,
+  ) {
     final isCheckIn = log.isCheckIn;
     final color = isCheckIn ? Colors.green : Colors.orange;
 
@@ -645,10 +671,7 @@ class _DashboardTab extends StatelessWidget {
         },
         leading: CircleAvatar(
           backgroundColor: color.withValues(alpha: 0.1),
-          child: Icon(
-            isCheckIn ? Icons.login : Icons.logout,
-            color: color,
-          ),
+          child: Icon(isCheckIn ? Icons.login : Icons.logout, color: color),
         ),
         title: Text(
           log.visitorName,
@@ -731,11 +754,7 @@ class _AccessHistoryTab extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.history,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.history, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   const Text(
                     'Chưa có lịch sử check-in/out hôm nay',
@@ -820,13 +839,7 @@ class _AccessHistoryTab extends StatelessWidget {
             color: color,
           ),
         ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
       ],
     );
   }
@@ -884,7 +897,10 @@ class _AccessHistoryTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -901,16 +917,11 @@ class _AccessHistoryTab extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   log.timeDisplay,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
                   log.dateDisplay,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
             ),
@@ -947,7 +958,9 @@ class _ProfileTab extends StatelessWidget {
                   radius: 48,
                   backgroundColor: AppColors.guardPrimary,
                   child: Text(
-                    user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : 'G',
+                    user.fullName.isNotEmpty
+                        ? user.fullName[0].toUpperCase()
+                        : 'G',
                     style: const TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
@@ -975,7 +988,10 @@ class _ProfileTab extends StatelessWidget {
               const SizedBox(height: 8),
               Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.guardPrimary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
@@ -1052,7 +1068,10 @@ class _ProfileTab extends StatelessWidget {
                           ),
                           TextButton(
                             onPressed: () => Navigator.pop(context, true),
-                            child: const Text('Đăng xuất', style: TextStyle(color: Colors.red)),
+                            child: const Text(
+                              'Đăng xuất',
+                              style: TextStyle(color: Colors.red),
+                            ),
                           ),
                         ],
                       ),

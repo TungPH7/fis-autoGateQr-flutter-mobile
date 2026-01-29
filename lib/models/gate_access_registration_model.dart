@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../core/constants/app_constants.dart';
+import '../core/utils/helpers.dart';
 
 /// Model for gate access registration requests
 /// Flow: User registers -> Admin approves -> QR activated
@@ -137,7 +139,8 @@ class GateAccessRegistrationModel {
       companyName: data['companyName'],
       photoUrl: data['photoUrl'] ?? data['userPhotoUrl'],
       userId: data['userId'],
-      expectedDate: (data['expectedDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      expectedDate:
+          (data['expectedDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       expectedTimeFrom: (data['expectedTimeFrom'] as Timestamp?)?.toDate(),
       expectedTimeTo: (data['expectedTimeTo'] as Timestamp?)?.toDate(),
       accessType: data['accessType'] ?? 'both',
@@ -186,8 +189,12 @@ class GateAccessRegistrationModel {
       'photoUrl': photoUrl,
       'userId': userId,
       'expectedDate': Timestamp.fromDate(expectedDate),
-      'expectedTimeFrom': expectedTimeFrom != null ? Timestamp.fromDate(expectedTimeFrom!) : null,
-      'expectedTimeTo': expectedTimeTo != null ? Timestamp.fromDate(expectedTimeTo!) : null,
+      'expectedTimeFrom': expectedTimeFrom != null
+          ? Timestamp.fromDate(expectedTimeFrom!)
+          : null,
+      'expectedTimeTo': expectedTimeTo != null
+          ? Timestamp.fromDate(expectedTimeTo!)
+          : null,
       'accessType': accessType,
       'purpose': purpose,
       'visitDepartment': visitDepartment,
@@ -199,9 +206,15 @@ class GateAccessRegistrationModel {
       'approvedAt': approvedAt != null ? Timestamp.fromDate(approvedAt!) : null,
       'rejectionReason': rejectionReason,
       'qrCode': qrCode,
-      'qrExpiresAt': qrExpiresAt != null ? Timestamp.fromDate(qrExpiresAt!) : null,
-      'actualCheckInTime': actualCheckInTime != null ? Timestamp.fromDate(actualCheckInTime!) : null,
-      'actualCheckOutTime': actualCheckOutTime != null ? Timestamp.fromDate(actualCheckOutTime!) : null,
+      'qrExpiresAt': qrExpiresAt != null
+          ? Timestamp.fromDate(qrExpiresAt!)
+          : null,
+      'actualCheckInTime': actualCheckInTime != null
+          ? Timestamp.fromDate(actualCheckInTime!)
+          : null,
+      'actualCheckOutTime': actualCheckOutTime != null
+          ? Timestamp.fromDate(actualCheckOutTime!)
+          : null,
       'checkInGateId': checkInGateId,
       'checkOutGateId': checkOutGateId,
       'checkInGuardId': checkInGuardId,
@@ -318,25 +331,35 @@ class GateAccessRegistrationModel {
 
   // Status helpers
   bool get isPending => status == AppConstants.statusPending;
+
   bool get isApproved => status == AppConstants.statusApproved;
+
   bool get isRejected => status == AppConstants.statusRejected;
+
   bool get isExpired => status == AppConstants.statusExpired;
+
   bool get isUsed => status == 'used';
+
   bool get isCancelled => status == 'cancelled';
 
   // Visitor type helpers
   bool get isEmployee => visitorType == 'employee';
+
   bool get isContractor => visitorType == 'contractor';
+
   bool get isVisitor => visitorType == 'visitor';
 
   // Registration source
   bool get isRegisteredByUser => userId != null && createdBy == null;
+
   bool get isRegisteredByGuard => createdBy != null;
 
   // QR validity
   bool get hasValidQR {
     if (!isApproved || qrCode == null) return false;
-    if (qrExpiresAt != null && DateTime.now().isAfter(qrExpiresAt!)) return false;
+    if (qrExpiresAt != null && DateTime.now().isAfter(qrExpiresAt!)) {
+      return false;
+    }
     return true;
   }
 
@@ -347,14 +370,20 @@ class GateAccessRegistrationModel {
 
   // Check-in/out status
   bool get hasCheckedIn => actualCheckInTime != null;
+
   bool get hasCheckedOut => actualCheckOutTime != null;
+
   bool get isCurrentlyInside => hasCheckedIn && !hasCheckedOut;
 
   // Check if registration is valid for today (accounts for multiple days)
   bool get isForToday {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final startDate = DateTime(expectedDate.year, expectedDate.month, expectedDate.day);
+    final startDate = DateTime(
+      expectedDate.year,
+      expectedDate.month,
+      expectedDate.day,
+    );
 
     if (isMultipleDays && endDate != null) {
       final end = DateTime(endDate!.year, endDate!.month, endDate!.day);
@@ -376,7 +405,11 @@ class GateAccessRegistrationModel {
       return today.isAfter(end);
     }
 
-    final regDate = DateTime(expectedDate.year, expectedDate.month, expectedDate.day);
+    final regDate = DateTime(
+      expectedDate.year,
+      expectedDate.month,
+      expectedDate.day,
+    );
     return regDate.isBefore(today);
   }
 
@@ -441,9 +474,11 @@ class GateAccessRegistrationModel {
   bool get hasVehicle => vehiclePlate != null && vehiclePlate!.isNotEmpty;
 
   String get expectedDateDisplay {
-    final startStr = '${expectedDate.day.toString().padLeft(2, '0')}/${expectedDate.month.toString().padLeft(2, '0')}/${expectedDate.year}';
+    final startStr =
+        '${expectedDate.day.toString().padLeft(2, '0')}/${expectedDate.month.toString().padLeft(2, '0')}/${expectedDate.year}';
     if (isMultipleDays && endDate != null) {
-      final endStr = '${endDate!.day.toString().padLeft(2, '0')}/${endDate!.month.toString().padLeft(2, '0')}/${endDate!.year}';
+      final endStr =
+          '${endDate!.day.toString().padLeft(2, '0')}/${endDate!.month.toString().padLeft(2, '0')}/${endDate!.year}';
       return '$startStr - $endStr';
     }
     return startStr;
@@ -467,5 +502,23 @@ class GateAccessRegistrationModel {
   String? get idCardMasked {
     if (idCard == null || idCard!.length < 4) return idCard;
     return '****${idCard!.substring(idCard!.length - 4)}';
+  }
+
+  /// Get safe initial for avatar
+  String get nameInitial {
+    if (fullName.trim().isEmpty) return '---';
+    return fullName.trim()[0].toUpperCase();
+  }
+
+  /// Get stay duration display
+  String get stayDurationDisplay {
+    if (actualCheckInTime == null) return 'N/A';
+    return Helpers.getDurationBetween(actualCheckInTime!, DateTime.now());
+  }
+
+  /// Get formatted check-in time
+  String get checkInTimeDisplay {
+    if (actualCheckInTime == null) return 'N/A';
+    return Helpers.formatDateTime(actualCheckInTime!);
   }
 }

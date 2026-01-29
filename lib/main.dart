@@ -193,53 +193,45 @@ class AppSelectorScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Chọn vai trò',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
                   const SizedBox(height: 48),
 
                   // Employee App Button (Person-based access)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/login');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(20),
-                        backgroundColor: Colors.blue,
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.person, size: 28),
-                          SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Khách/Nhà thầu và Nhân viên',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'Đăng ký vào/ra cổng, hiển thị mã QR cá nhân',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       Navigator.pushNamed(context, '/login');
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       padding: const EdgeInsets.all(20),
+                  //       backgroundColor: Colors.blue,
+                  //     ),
+                  //     child: const Row(
+                  //       mainAxisAlignment: MainAxisAlignment.center,
+                  //       children: [
+                  //         Icon(Icons.person, size: 28),
+                  //         SizedBox(width: 12),
+                  //         Column(
+                  //           crossAxisAlignment: CrossAxisAlignment.start,
+                  //           children: [
+                  //             Text(
+                  //               'Khách/Nhà thầu và Nhân viên',
+                  //               style: TextStyle(
+                  //                 fontSize: 18,
+                  //                 fontWeight: FontWeight.bold,
+                  //               ),
+                  //             ),
+                  //             Text(
+                  //               'Đăng ký vào/ra cổng, hiển thị mã QR cá nhân',
+                  //               style: TextStyle(fontSize: 12),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 16),
 
                   // Guard App Button
                   SizedBox(
@@ -249,13 +241,13 @@ class AppSelectorScreen extends StatelessWidget {
                         Navigator.pushNamed(context, '/guard/login');
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.fromLTRB(30,20,20,20),
                         backgroundColor: Colors.green,
                       ),
                       child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Icon(Icons.security, size: 28),
+                          Icon(Icons.security, size: 40),
                           SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,13 +255,13 @@ class AppSelectorScreen extends StatelessWidget {
                               Text(
                                 'Bảo vệ',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
                                 'Quét QR & Check-in/out',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 14),
                               ),
                             ],
                           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import '../constants/app_constants.dart';
 import '../theme/app_colors.dart';
 
@@ -48,6 +49,63 @@ class Helpers {
     return '$hours giờ $remainingMinutes phút';
   }
 
+  static String getDurationBetween(DateTime from, DateTime to) {
+    if (to.isBefore(from)) {
+      final tmp = from;
+      from = to;
+      to = tmp;
+    }
+
+    final diff = to.difference(from);
+
+    // < 1 day → chi tiết tới giây
+    if (diff.inDays == 0) {
+      final hours = diff.inHours;
+      final minutes = diff.inMinutes % 60;
+      final seconds = diff.inSeconds % 60;
+      final parts = <String>[];
+
+      if (hours > 0) parts.add('$hours giờ');
+      if (minutes > 0) parts.add('$minutes phút');
+
+      return parts.join(' ');
+    }
+
+    // >= 1 day và < 1 month
+    if (diff.inDays < 30) {
+      final days = diff.inDays;
+      final hours = diff.inHours % 24;
+
+      final parts = <String>[];
+      parts.add('$days ngày');
+      if (hours > 0) parts.add('$hours giờ');
+      return parts.join(' ');
+    }
+
+    // >= 1 month → tính theo calendar
+    int years = to.year - from.year;
+    int months = to.month - from.month;
+    int days = to.day - from.day;
+
+    if (days < 0) {
+      months--;
+      final prevMonth = DateTime(to.year, to.month, 0);
+      days += prevMonth.day;
+    }
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    final parts = <String>[];
+    if (years > 0) parts.add('$years năm');
+    if (months > 0) parts.add('$months tháng');
+    if (days > 0) parts.add('$days ngày');
+
+    return parts.join(' ');
+  }
+
   // Status Helpers
   static String getStatusText(String status) {
     switch (status) {
@@ -81,6 +139,17 @@ class Helpers {
       default:
         return AppColors.textSecondary;
     }
+  }
+
+  static Color getCardBackgroundFromStatus(Color statusColor) {
+    if (statusColor == Colors.orange) return const Color(0xFFFFF4E5);
+    if (statusColor == Colors.green) return const Color(0xFFE6F4EA);
+    if (statusColor == Colors.red) return const Color(0xFFFDECEA);
+    if (statusColor == Colors.blue) return const Color(0xFFE8F1FD);
+    if (statusColor == Colors.grey) return const Color(0xFFF5F5F5);
+
+    // default fallback
+    return const Color(0xFFF5F5F5);
   }
 
   static IconData getStatusIcon(String status) {
@@ -120,16 +189,18 @@ class Helpers {
   }
 
   // Snackbar Helpers
-  static void showSnackBar(BuildContext context, String message, {bool isError = false}) {
+  static void showSnackBar(
+    BuildContext context,
+    String message, {
+    bool isError = false,
+  }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: isError ? AppColors.error : AppColors.success,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }
