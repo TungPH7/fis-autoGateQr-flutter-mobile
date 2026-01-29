@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/vehicle_model.dart';
-import '../models/registration_model.dart';
+
+import '../core/constants/app_constants.dart';
+import '../models/access_log_model.dart';
 import '../models/check_in_out_model.dart';
+import '../models/gate_access_registration_model.dart';
 import '../models/gate_model.dart';
 import '../models/notification_model.dart';
+import '../models/registration_model.dart';
 import '../models/user_model.dart';
-import '../models/access_log_model.dart';
-import '../models/gate_access_registration_model.dart';
+import '../models/vehicle_model.dart';
 import '../models/visitor_access_log_model.dart';
-import '../core/constants/app_constants.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -92,19 +93,27 @@ class FirestoreService {
   }
 
   // Get access logs by user (recent history)
-  Stream<List<AccessLogModel>> getAccessLogsByUser(String userId, {int days = 7}) {
+  Stream<List<AccessLogModel>> getAccessLogsByUser(
+    String userId, {
+    int days = 7,
+  }) {
     final startDate = DateTime.now().subtract(Duration(days: days));
 
     return _firestore
         .collection(AppConstants.accessLogsCollection)
         .where('userId', isEqualTo: userId)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startDate))
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startDate),
+        )
         .orderBy('timestamp', descending: true)
         .limit(100)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get today's access logs by user
@@ -116,13 +125,18 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.accessLogsCollection)
         .where('userId', isEqualTo: userId)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get last access log for a user (to determine current status)
@@ -148,13 +162,18 @@ class FirestoreService {
     return _firestore
         .collection(AppConstants.accessLogsCollection)
         .where('gateId', isEqualTo: gateId)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .orderBy('timestamp', descending: true)
         .limit(100)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get current people inside (checked-in but not checked-out)
@@ -165,7 +184,10 @@ class FirestoreService {
     // Get today's logs
     final snapshot = await _firestore
         .collection(AppConstants.accessLogsCollection)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .orderBy('timestamp', descending: false)
         .get();
 
@@ -177,7 +199,9 @@ class FirestoreService {
     }
 
     // Count users whose last action was check-in
-    return userStatus.values.where((type) => type == AppConstants.accessTypeCheckIn).length;
+    return userStatus.values
+        .where((type) => type == AppConstants.accessTypeCheckIn)
+        .length;
   }
 
   // Check if user is currently inside
@@ -188,7 +212,11 @@ class FirestoreService {
     // Check if the last log was today and was a check-in
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final logDate = DateTime(lastLog.timestamp.year, lastLog.timestamp.month, lastLog.timestamp.day);
+    final logDate = DateTime(
+      lastLog.timestamp.year,
+      lastLog.timestamp.month,
+      lastLog.timestamp.day,
+    );
 
     return logDate == today && lastLog.isCheckIn;
   }
@@ -204,9 +232,11 @@ class FirestoreService {
         .orderBy('status')
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VehicleModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => VehicleModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get vehicle by ID
@@ -231,7 +261,10 @@ class FirestoreService {
   }
 
   // Update vehicle
-  Future<void> updateVehicle(String vehicleId, Map<String, dynamic> data) async {
+  Future<void> updateVehicle(
+    String vehicleId,
+    Map<String, dynamic> data,
+  ) async {
     data['updatedAt'] = FieldValue.serverTimestamp();
     await _firestore
         .collection(AppConstants.vehiclesCollection)
@@ -253,22 +286,29 @@ class FirestoreService {
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => RegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => RegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get registrations by status
-  Stream<List<RegistrationModel>> getRegistrationsByStatus(String userId, String status) {
+  Stream<List<RegistrationModel>> getRegistrationsByStatus(
+    String userId,
+    String status,
+  ) {
     return _firestore
         .collection(AppConstants.registrationsCollection)
         .where('userId', isEqualTo: userId)
         .where('status', isEqualTo: status)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => RegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => RegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get registration by ID
@@ -293,7 +333,10 @@ class FirestoreService {
   }
 
   // Update registration
-  Future<void> updateRegistration(String registrationId, Map<String, dynamic> data) async {
+  Future<void> updateRegistration(
+    String registrationId,
+    Map<String, dynamic> data,
+  ) async {
     data['updatedAt'] = FieldValue.serverTimestamp();
     await _firestore
         .collection(AppConstants.registrationsCollection)
@@ -313,15 +356,15 @@ class FirestoreService {
         .collection(AppConstants.registrationsCollection)
         .doc(registrationId)
         .update({
-      'status': AppConstants.statusApproved,
-      'approvedBy': approvedBy,
-      'approvedByName': approvedByName,
-      'approvedAt': FieldValue.serverTimestamp(),
-      'qrCode': qrCode,
-      'qrGeneratedAt': FieldValue.serverTimestamp(),
-      'qrExpiresAt': Timestamp.fromDate(qrExpiresAt),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'status': AppConstants.statusApproved,
+          'approvedBy': approvedBy,
+          'approvedByName': approvedByName,
+          'approvedAt': FieldValue.serverTimestamp(),
+          'qrCode': qrCode,
+          'qrGeneratedAt': FieldValue.serverTimestamp(),
+          'qrExpiresAt': Timestamp.fromDate(qrExpiresAt),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   // Reject registration
@@ -334,11 +377,11 @@ class FirestoreService {
         .collection(AppConstants.registrationsCollection)
         .doc(registrationId)
         .update({
-      'status': AppConstants.statusRejected,
-      'approvedBy': rejectedBy,
-      'rejectionReason': reason,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'status': AppConstants.statusRejected,
+          'approvedBy': rejectedBy,
+          'rejectionReason': reason,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   // ==================== CHECK-IN/OUT ====================
@@ -350,9 +393,11 @@ class FirestoreService {
         .where('status', isEqualTo: AppConstants.checkStatusInProgress)
         .orderBy('checkInTime', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => CheckInOutModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => CheckInOutModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get check-ins by date
@@ -362,17 +407,24 @@ class FirestoreService {
 
     return _firestore
         .collection(AppConstants.checkInOutsCollection)
-        .where('checkInTime', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'checkInTime',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .where('checkInTime', isLessThan: Timestamp.fromDate(endOfDay))
         .orderBy('checkInTime', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => CheckInOutModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => CheckInOutModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get check-in/out by registration
-  Future<CheckInOutModel?> getCheckInOutByRegistration(String registrationId) async {
+  Future<CheckInOutModel?> getCheckInOutByRegistration(
+    String registrationId,
+  ) async {
     final snapshot = await _firestore
         .collection(AppConstants.checkInOutsCollection)
         .where('registrationId', isEqualTo: registrationId)
@@ -410,20 +462,22 @@ class FirestoreService {
     if (!checkIn.exists) return;
 
     final checkInData = CheckInOutModel.fromFirestore(checkIn);
-    final duration = checkOutTime.difference(checkInData.checkInTime!).inMinutes;
+    final duration = checkOutTime
+        .difference(checkInData.checkInTime!)
+        .inMinutes;
 
     await _firestore
         .collection(AppConstants.checkInOutsCollection)
         .doc(checkInOutId)
         .update({
-      'checkOutTime': Timestamp.fromDate(checkOutTime),
-      'checkOutImage': checkOutImage,
-      'checkOutLocation': checkOutLocation,
-      'durationMinutes': duration,
-      'notes': notes,
-      'status': AppConstants.checkStatusCompleted,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'checkOutTime': Timestamp.fromDate(checkOutTime),
+          'checkOutImage': checkOutImage,
+          'checkOutLocation': checkOutLocation,
+          'durationMinutes': duration,
+          'notes': notes,
+          'status': AppConstants.checkStatusCompleted,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
 
     // Update registration status to completed
     await updateRegistration(checkInData.registrationId, {
@@ -439,9 +493,10 @@ class FirestoreService {
         .collection(AppConstants.gatesCollection)
         .where('isActive', isEqualTo: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => GateModel.fromFirestore(doc)).toList(),
+        );
   }
 
   // Get gate by ID
@@ -467,9 +522,11 @@ class FirestoreService {
         .orderBy('createdAt', descending: true)
         .limit(50)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => NotificationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => NotificationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get unread notification count
@@ -487,10 +544,7 @@ class FirestoreService {
     await _firestore
         .collection(AppConstants.notificationsCollection)
         .doc(notificationId)
-        .update({
-      'isRead': true,
-      'readAt': FieldValue.serverTimestamp(),
-    });
+        .update({'isRead': true, 'readAt': FieldValue.serverTimestamp()});
   }
 
   // Mark all notifications as read
@@ -531,17 +585,22 @@ class FirestoreService {
         .orderBy('checkOutTime', descending: true)
         .limit(50)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => CheckInOutModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => CheckInOutModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // ==================== GATE ACCESS REGISTRATIONS ====================
 
-  static const String gateAccessRegistrationsCollection = 'gateAccessRegistrations';
+  static const String gateAccessRegistrationsCollection =
+      'gateAccessRegistrations';
 
   // Create gate access registration
-  Future<String> createGateAccessRegistration(GateAccessRegistrationModel registration) async {
+  Future<String> createGateAccessRegistration(
+    GateAccessRegistrationModel registration,
+  ) async {
     final docRef = await _firestore
         .collection(gateAccessRegistrationsCollection)
         .add(registration.toFirestore());
@@ -549,33 +608,43 @@ class FirestoreService {
   }
 
   // Get gate access registrations by user
-  Stream<List<GateAccessRegistrationModel>> getGateAccessRegistrationsByUser(String userId) {
+  Stream<List<GateAccessRegistrationModel>> getGateAccessRegistrationsByUser(
+    String userId,
+  ) {
     return _firestore
         .collection(gateAccessRegistrationsCollection)
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get gate access registrations by user and status
   Stream<List<GateAccessRegistrationModel>> getGateAccessRegistrationsByStatus(
-      String userId, String status) {
+    String userId,
+    String status,
+  ) {
     return _firestore
         .collection(gateAccessRegistrationsCollection)
         .where('userId', isEqualTo: userId)
         .where('status', isEqualTo: status)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get approved registrations for today (for QR display)
-  Stream<List<GateAccessRegistrationModel>> getApprovedRegistrationsForToday(String userId) {
+  Stream<List<GateAccessRegistrationModel>> getApprovedRegistrationsForToday(
+    String userId,
+  ) {
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
@@ -584,16 +653,23 @@ class FirestoreService {
         .collection(gateAccessRegistrationsCollection)
         .where('userId', isEqualTo: userId)
         .where('status', isEqualTo: AppConstants.statusApproved)
-        .where('expectedDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'expectedDate',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .where('expectedDate', isLessThan: Timestamp.fromDate(endOfDay))
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get gate access registration by ID
-  Future<GateAccessRegistrationModel?> getGateAccessRegistrationById(String registrationId) async {
+  Future<GateAccessRegistrationModel?> getGateAccessRegistrationById(
+    String registrationId,
+  ) async {
     final doc = await _firestore
         .collection(gateAccessRegistrationsCollection)
         .doc(registrationId)
@@ -606,7 +682,9 @@ class FirestoreService {
   }
 
   // Get gate access registration by QR code
-  Future<GateAccessRegistrationModel?> getGateAccessRegistrationByQRCode(String qrCode) async {
+  Future<GateAccessRegistrationModel?> getGateAccessRegistrationByQRCode(
+    String qrCode,
+  ) async {
     final snapshot = await _firestore
         .collection(gateAccessRegistrationsCollection)
         .where('qrCode', isEqualTo: qrCode)
@@ -621,7 +699,9 @@ class FirestoreService {
 
   // Update gate access registration
   Future<void> updateGateAccessRegistration(
-      String registrationId, Map<String, dynamic> data) async {
+    String registrationId,
+    Map<String, dynamic> data,
+  ) async {
     data['updatedAt'] = FieldValue.serverTimestamp();
     await _firestore
         .collection(gateAccessRegistrationsCollection)
@@ -636,9 +716,11 @@ class FirestoreService {
         .orderBy('createdAt', descending: true)
         .limit(100)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get today's gate access registrations (for guards)
@@ -649,27 +731,34 @@ class FirestoreService {
 
     return _firestore
         .collection(gateAccessRegistrationsCollection)
-        .where('expectedDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'expectedDate',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .where('expectedDate', isLessThan: Timestamp.fromDate(endOfDay))
         .orderBy('expectedDate', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get gate access registrations by status (for guards/admins)
-  Stream<List<GateAccessRegistrationModel>> getGateAccessRegistrationsByStatusForGuard(
-      String status) {
+  Stream<List<GateAccessRegistrationModel>>
+  getGateAccessRegistrationsByStatusForGuard(String status) {
     return _firestore
         .collection(gateAccessRegistrationsCollection)
         .where('status', isEqualTo: status)
         .orderBy('createdAt', descending: true)
         .limit(50)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Cancel gate access registration (user cancels their own request)
@@ -678,9 +767,9 @@ class FirestoreService {
         .collection(gateAccessRegistrationsCollection)
         .doc(registrationId)
         .update({
-      'status': 'cancelled',
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'status': 'cancelled',
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   // Approve gate access registration (Admin)
@@ -695,14 +784,14 @@ class FirestoreService {
         .collection(gateAccessRegistrationsCollection)
         .doc(registrationId)
         .update({
-      'status': AppConstants.statusApproved,
-      'approvedBy': approvedBy,
-      'approvedByName': approvedByName,
-      'approvedAt': FieldValue.serverTimestamp(),
-      'qrCode': qrCode,
-      'qrExpiresAt': Timestamp.fromDate(qrExpiresAt),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'status': AppConstants.statusApproved,
+          'approvedBy': approvedBy,
+          'approvedByName': approvedByName,
+          'approvedAt': FieldValue.serverTimestamp(),
+          'qrCode': qrCode,
+          'qrExpiresAt': Timestamp.fromDate(qrExpiresAt),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   // Reject gate access registration (Admin)
@@ -716,12 +805,12 @@ class FirestoreService {
         .collection(gateAccessRegistrationsCollection)
         .doc(registrationId)
         .update({
-      'status': AppConstants.statusRejected,
-      'approvedBy': rejectedBy,
-      'approvedByName': rejectedByName,
-      'rejectionReason': reason,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'status': AppConstants.statusRejected,
+          'approvedBy': rejectedBy,
+          'approvedByName': rejectedByName,
+          'rejectionReason': reason,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   // Mark registration as used (after check-in)
@@ -729,38 +818,45 @@ class FirestoreService {
     await _firestore
         .collection(gateAccessRegistrationsCollection)
         .doc(registrationId)
-        .update({
-      'status': 'used',
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+        .update({'status': 'used', 'updatedAt': FieldValue.serverTimestamp()});
   }
 
   // Get all pending registrations (for Admin)
-  Stream<List<GateAccessRegistrationModel>> getPendingGateAccessRegistrations() {
+  Stream<List<GateAccessRegistrationModel>>
+  getPendingGateAccessRegistrations() {
     return _firestore
         .collection(gateAccessRegistrationsCollection)
         .where('status', isEqualTo: AppConstants.statusPending)
         .orderBy('createdAt', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get all registrations for a date (for Admin)
-  Stream<List<GateAccessRegistrationModel>> getGateAccessRegistrationsByDate(DateTime date) {
+  Stream<List<GateAccessRegistrationModel>> getGateAccessRegistrationsByDate(
+    DateTime date,
+  ) {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
     return _firestore
         .collection(gateAccessRegistrationsCollection)
-        .where('expectedDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'expectedDate',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .where('expectedDate', isLessThan: Timestamp.fromDate(endOfDay))
         .orderBy('expectedDate')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // ==================== VISITOR ACCESS LOGS ====================
@@ -788,11 +884,11 @@ class FirestoreService {
         .collection(gateAccessRegistrationsCollection)
         .doc(registrationId)
         .update({
-      'actualCheckInTime': Timestamp.fromDate(now),
-      'checkInGuardId': guardId,
-      'checkInGateId': gateId,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'actualCheckInTime': Timestamp.fromDate(now),
+          'checkInGuardId': guardId,
+          'checkInGateId': gateId,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
 
     // Create access log
     final log = VisitorAccessLogModel(
@@ -809,7 +905,10 @@ class FirestoreService {
       guardId: guardId,
       guardName: guardName,
       purpose: registration.purpose,
-      addressOrCompany: registration.addressOrCompany ?? registration.companyName ?? registration.address,
+      addressOrCompany:
+          registration.addressOrCompany ??
+          registration.companyName ??
+          registration.address,
       idCardHeldByGuard: registration.idCardHeldByGuard,
       accessCardNumber: registration.accessCardNumber,
       vehiclePlate: registration.vehiclePlate,
@@ -845,14 +944,14 @@ class FirestoreService {
         .collection(gateAccessRegistrationsCollection)
         .doc(registrationId)
         .update({
-      'actualCheckOutTime': Timestamp.fromDate(now),
-      'checkOutGuardId': guardId,
-      'checkOutGateId': gateId,
-      'status': 'used',
-      'accessCardReturned': accessCardReturned,
-      'idCardReturned': idCardReturned,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
+          'actualCheckOutTime': Timestamp.fromDate(now),
+          'checkOutGuardId': guardId,
+          'checkOutGateId': gateId,
+          'status': 'used',
+          'accessCardReturned': accessCardReturned,
+          'idCardReturned': idCardReturned,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
 
     // Create access log
     final log = VisitorAccessLogModel(
@@ -869,7 +968,10 @@ class FirestoreService {
       guardId: guardId,
       guardName: guardName,
       purpose: registration.purpose,
-      addressOrCompany: registration.addressOrCompany ?? registration.companyName ?? registration.address,
+      addressOrCompany:
+          registration.addressOrCompany ??
+          registration.companyName ??
+          registration.address,
       idCardHeldByGuard: registration.idCardHeldByGuard,
       accessCardNumber: registration.accessCardNumber,
       vehiclePlate: registration.vehiclePlate,
@@ -889,9 +991,11 @@ class FirestoreService {
         .orderBy('timestamp', descending: true)
         .limit(200)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get recent visitor access logs with limit
@@ -901,9 +1005,11 @@ class FirestoreService {
         .orderBy('timestamp', descending: true)
         .limit(limit)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get visitor access logs for last N days
@@ -913,12 +1019,17 @@ class FirestoreService {
 
     return _firestore
         .collection(visitorAccessLogsCollection)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get today's visitor access logs
@@ -929,13 +1040,18 @@ class FirestoreService {
 
     return _firestore
         .collection(visitorAccessLogsCollection)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .where('timestamp', isLessThan: Timestamp.fromDate(endOfDay))
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get visitor access logs by type (check_in or check_out)
@@ -946,9 +1062,11 @@ class FirestoreService {
         .orderBy('timestamp', descending: true)
         .limit(100)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get today's registrations by createdAt (for Guard - đăng ký hôm nay)
@@ -959,13 +1077,18 @@ class FirestoreService {
 
     return _firestore
         .collection(gateAccessRegistrationsCollection)
-        .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'createdAt',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .where('createdAt', isLessThan: Timestamp.fromDate(endOfDay))
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get visitors currently inside (checked in but not checked out)
@@ -976,9 +1099,11 @@ class FirestoreService {
         .where('actualCheckOutTime', isNull: true)
         .orderBy('actualCheckInTime', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get registrations from last N days (for Guard)
@@ -988,12 +1113,17 @@ class FirestoreService {
 
     return _firestore
         .collection(gateAccessRegistrationsCollection)
-        .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'createdAt',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Create visitor access log
@@ -1006,27 +1136,40 @@ class FirestoreService {
 
   // Delete visitor access log
   Future<void> deleteVisitorAccessLog(String logId) async {
-    await _firestore.collection(visitorAccessLogsCollection).doc(logId).delete();
+    await _firestore
+        .collection(visitorAccessLogsCollection)
+        .doc(logId)
+        .delete();
   }
 
   // Get visitor access logs by phone number (for employee/contractor app)
-  Stream<List<VisitorAccessLogModel>> getVisitorAccessLogsByPhone(String phone, {int days = 7}) {
+  Stream<List<VisitorAccessLogModel>> getVisitorAccessLogsByPhone(
+    String phone, {
+    int days = 7,
+  }) {
     final startDate = DateTime.now().subtract(Duration(days: days));
     final startOfDay = DateTime(startDate.year, startDate.month, startDate.day);
 
     return _firestore
         .collection(visitorAccessLogsCollection)
         .where('visitorPhone', isEqualTo: phone)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => VisitorAccessLogModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get last visitor access log by phone (to check current status)
-  Future<VisitorAccessLogModel?> getLastVisitorAccessLogByPhone(String phone) async {
+  Future<VisitorAccessLogModel?> getLastVisitorAccessLogByPhone(
+    String phone,
+  ) async {
     final snapshot = await _firestore
         .collection(visitorAccessLogsCollection)
         .where('visitorPhone', isEqualTo: phone)
@@ -1070,7 +1213,10 @@ class FirestoreService {
     return _firestore
         .collection(visitorAccessLogsCollection)
         .where('visitorPhone', isEqualTo: phone)
-        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
@@ -1109,7 +1255,9 @@ class FirestoreService {
         .toList();
 
     if (visitorType != null && visitorType.isNotEmpty) {
-      final filtered = logs.where((log) => log.visitorType == visitorType).toList();
+      final filtered = logs
+          .where((log) => log.visitorType == visitorType)
+          .toList();
       return filtered.isNotEmpty ? filtered.first : null;
     }
 
@@ -1137,5 +1285,44 @@ class FirestoreService {
     );
 
     return logDate == today && lastLog.isCheckIn;
+  }
+
+  // Get waiting checkout list
+  Stream<List<GateAccessRegistrationModel>> getVisitorsInsideBase({
+    bool onlyToday = false,
+  }) {
+    const actualCheckInTimeField = 'actualCheckInTime';
+    const actualCheckOutTimeField = 'actualCheckOutTime';
+
+    Query query = _firestore
+        .collection(gateAccessRegistrationsCollection)
+        .where(actualCheckInTimeField, isNull: false)
+        .where(actualCheckOutTimeField, isNull: true);
+
+    if (onlyToday) {
+      final now = DateTime.now();
+      final startOfDay = DateTime(now.year, now.month, now.day);
+      final endOfDay = startOfDay.add(const Duration(days: 1));
+
+      query = query
+          .where(
+            actualCheckInTimeField,
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+          )
+          .where(
+            actualCheckInTimeField,
+            isLessThan: Timestamp.fromDate(endOfDay),
+          );
+    }
+
+    query = query.orderBy(actualCheckInTimeField, descending: true);
+
+    final result = query.snapshots().map(
+      (snapshot) => snapshot.docs
+          .map((doc) => GateAccessRegistrationModel.fromFirestore(doc))
+          .toList(),
+    );
+
+    return result;
   }
 }

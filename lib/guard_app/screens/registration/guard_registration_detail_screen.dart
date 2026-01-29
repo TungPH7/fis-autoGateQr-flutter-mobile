@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:provider/provider.dart';
-import '../../../models/gate_access_registration_model.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/helpers.dart';
-import '../../../services/firestore_service.dart';
+import '../../../models/gate_access_registration_model.dart';
 import '../../../providers/auth_provider.dart';
+import '../../../services/firestore_service.dart';
 
 class GuardRegistrationDetailScreen extends StatefulWidget {
   final GateAccessRegistrationModel registration;
 
-  const GuardRegistrationDetailScreen({
-    super.key,
-    required this.registration,
-  });
+  const GuardRegistrationDetailScreen({super.key, required this.registration});
 
   @override
   State<GuardRegistrationDetailScreen> createState() =>
@@ -42,9 +40,11 @@ class _GuardRegistrationDetailScreenState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Bạn có muốn cho phép viếng thăm không?'),
+            const Text('Bạn chắc chắn muốn cho khách này vào trong khu vực?'),
             const SizedBox(height: 12),
+
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.blue.withOpacity(0.1),
@@ -95,8 +95,9 @@ class _GuardRegistrationDetailScreenState
         );
 
         // Reload registration data
-        final updated = await _firestoreService
-            .getGateAccessRegistrationById(_registration.id);
+        final updated = await _firestoreService.getGateAccessRegistrationById(
+          _registration.id,
+        );
         if (updated != null && mounted) {
           setState(() {
             _registration = updated;
@@ -121,9 +122,7 @@ class _GuardRegistrationDetailScreenState
     // Show checkout dialog with confirmations
     final result = await showDialog<Map<String, bool>>(
       context: context,
-      builder: (context) => _CheckOutDialog(
-        registration: _registration,
-      ),
+      builder: (context) => _CheckOutDialog(registration: _registration),
     );
 
     if (result != null && mounted) {
@@ -141,17 +140,15 @@ class _GuardRegistrationDetailScreenState
         );
 
         // Reload registration data
-        final updated = await _firestoreService
-            .getGateAccessRegistrationById(_registration.id);
+        final updated = await _firestoreService.getGateAccessRegistrationById(
+          _registration.id,
+        );
         if (updated != null && mounted) {
           setState(() {
             _registration = updated;
             _isLoading = false;
           });
-          Helpers.showSuccessSnackBar(
-            context,
-            'Check-out thành công!',
-          );
+          Helpers.showSuccessSnackBar(context, 'Check-out thành công!');
         }
       } catch (e) {
         if (mounted) {
@@ -185,10 +182,8 @@ class _GuardRegistrationDetailScreenState
               const SizedBox(height: 16),
 
             // Check-out Button (if currently inside - checked in but not checked out)
-            if (_registration.isCurrentlyInside)
-              _buildCheckOutButton(),
-            if (_registration.isCurrentlyInside)
-              const SizedBox(height: 16),
+            if (_registration.isCurrentlyInside) _buildCheckOutButton(),
+            if (_registration.isCurrentlyInside) const SizedBox(height: 16),
 
             // QR Code Card (if approved)
             if (_registration.isApproved && _registration.qrCode != null)
@@ -208,22 +203,28 @@ class _GuardRegistrationDetailScreenState
                 if (_registration.idCard != null)
                   _buildInfoRow('CCCD/CMND', _registration.idCard!),
                 if (_registration.addressOrCompany != null)
-                  _buildInfoRow('Địa chỉ/Công ty', _registration.addressOrCompany!),
-                if (_registration.address != null && _registration.addressOrCompany == null)
+                  _buildInfoRow(
+                    'Địa chỉ/Công ty',
+                    _registration.addressOrCompany!,
+                  ),
+                if (_registration.address != null &&
+                    _registration.addressOrCompany == null)
                   _buildInfoRow('Địa chỉ', _registration.address!),
-                if (_registration.companyName != null && _registration.addressOrCompany == null)
+                if (_registration.companyName != null &&
+                    _registration.addressOrCompany == null)
                   _buildInfoRow('Công ty', _registration.companyName!),
                 _buildInfoRow('Loại', _registration.visitorTypeDisplay),
                 if (_registration.idCardHeldByGuard)
-                  _buildInfoRow('Giữ CCCD', 'Bảo vệ đang giữ CCCD', valueColor: Colors.orange),
+                  _buildInfoRow(
+                    'Giữ CCCD',
+                    'Bảo vệ đang giữ CCCD',
+                    valueColor: Colors.orange,
+                  ),
                 if (_registration.photoUrl != null) ...[
                   const SizedBox(height: 8),
                   const Text(
                     'Ảnh CCCD/CMND',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 8),
                   ClipRRect(
@@ -265,7 +266,11 @@ class _GuardRegistrationDetailScreenState
                 title: 'Thẻ ra vào',
                 icon: Icons.credit_card,
                 children: [
-                  _buildInfoRow('Trạng thái', 'Đã cấp thẻ', valueColor: Colors.blue),
+                  _buildInfoRow(
+                    'Trạng thái',
+                    'Đã cấp thẻ',
+                    valueColor: Colors.blue,
+                  ),
                   if (_registration.accessCardNumber != null)
                     _buildInfoRow('Mã thẻ', _registration.accessCardNumber!),
                 ],
@@ -292,7 +297,10 @@ class _GuardRegistrationDetailScreenState
                     ? Icons.directions_car
                     : Icons.two_wheeler,
                 children: [
-                  _buildInfoRow('Loại xe', _registration.vehicleTypeDisplay ?? ''),
+                  _buildInfoRow(
+                    'Loại xe',
+                    _registration.vehicleTypeDisplay ?? '',
+                  ),
                   _buildInfoRow('Biển số', _registration.vehiclePlate ?? ''),
                 ],
               ),
@@ -387,19 +395,12 @@ class _GuardRegistrationDetailScreenState
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Icon(
-              Icons.how_to_reg,
-              size: 48,
-              color: Colors.green,
-            ),
+            const Icon(Icons.how_to_reg, size: 48, color: Colors.green),
             const SizedBox(height: 12),
             const Text(
               'Khách đã được duyệt và sẵn sàng check-in',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.green,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.green),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -444,19 +445,12 @@ class _GuardRegistrationDetailScreenState
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Icon(
-              Icons.exit_to_app,
-              size: 48,
-              color: Colors.orange,
-            ),
+            const Icon(Icons.exit_to_app, size: 48, color: Colors.orange),
             const SizedBox(height: 12),
             const Text(
               'Khách đang ở trong khu vực',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.orange,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.orange),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -506,18 +500,21 @@ class _GuardRegistrationDetailScreenState
       case 'approved':
         statusColor = Colors.green;
         statusIcon = Icons.check_circle;
-        statusText = _registration.hasCheckedIn ? 'Đang viếng thăm' : 'Đã duyệt';
+        statusText = _registration.hasCheckedIn
+            ? 'Đang viếng thăm'
+            : 'Đã duyệt';
         statusDescription = _registration.hasCheckedIn
             ? (_registration.hasCheckedOut
-                ? 'Khách đã check-out'
-                : 'Khách đang ở trong khu vực')
+                  ? 'Khách đã check-out'
+                  : 'Khách đang ở trong khu vực')
             : 'Khách có thể vào cổng';
         break;
       case 'rejected':
         statusColor = Colors.red;
         statusIcon = Icons.cancel;
         statusText = 'Từ chối';
-        statusDescription = _registration.rejectionReason ?? 'Đăng ký bị từ chối';
+        statusDescription =
+            _registration.rejectionReason ?? 'Đăng ký bị từ chối';
         break;
       case 'used':
         statusColor = Colors.blue;
@@ -544,11 +541,13 @@ class _GuardRegistrationDetailScreenState
         statusDescription = '';
     }
 
+    final cardColor = Helpers.getCardBackgroundFromStatus(statusColor);
+
     return Card(
-      color: statusColor.withValues(alpha: 0.1),
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: statusColor.withValues(alpha: 0.3)),
+        side: BorderSide(color: statusColor.withOpacity(0.45)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -557,7 +556,7 @@ class _GuardRegistrationDetailScreenState
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.2),
+                color: statusColor.withOpacity(0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(statusIcon, color: statusColor, size: 32),
@@ -580,7 +579,7 @@ class _GuardRegistrationDetailScreenState
                     statusDescription,
                     style: TextStyle(
                       fontSize: 13,
-                      color: statusColor.withValues(alpha: 0.8),
+                      color: statusColor.withOpacity(0.85),
                     ),
                   ),
                 ],
@@ -594,19 +593,14 @@ class _GuardRegistrationDetailScreenState
 
   Widget _buildQRCard() {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             const Text(
               'Mã QR',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Container(
@@ -629,7 +623,9 @@ class _GuardRegistrationDetailScreenState
                 'Hết hạn: ${Helpers.formatDateTime(_registration.qrExpiresAt!)}',
                 style: TextStyle(
                   fontSize: 12,
-                  color: _registration.isQRExpired ? Colors.red : Colors.grey[600],
+                  color: _registration.isQRExpired
+                      ? Colors.red
+                      : Colors.grey[600],
                 ),
               ),
           ],
@@ -644,9 +640,7 @@ class _GuardRegistrationDetailScreenState
     required List<Widget> children,
   }) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -660,11 +654,7 @@ class _GuardRegistrationDetailScreenState
                     color: AppColors.guardPrimary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
-                    icon,
-                    color: AppColors.guardPrimary,
-                    size: 20,
-                  ),
+                  child: Icon(icon, color: AppColors.guardPrimary, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -694,10 +684,7 @@ class _GuardRegistrationDetailScreenState
             width: 110,
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
           ),
           Expanded(
@@ -731,6 +718,7 @@ class _CheckOutDialogState extends State<_CheckOutDialog> {
   bool _idCardReturned = false;
 
   bool get _needsAccessCardReturn => widget.registration.accessCardIssued;
+
   bool get _needsIdCardReturn => widget.registration.idCardHeldByGuard;
 
   bool get _canConfirm {
@@ -791,10 +779,7 @@ class _CheckOutDialogState extends State<_CheckOutDialog> {
             if (_needsAccessCardReturn || _needsIdCardReturn) ...[
               const Text(
                 'Xác nhận trả lại:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               const SizedBox(height: 8),
 
