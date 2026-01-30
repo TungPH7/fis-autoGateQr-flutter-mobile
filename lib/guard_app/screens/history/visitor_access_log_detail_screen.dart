@@ -1,14 +1,13 @@
+import 'package:autogateqr/core/utils/helpers.dart';
 import 'package:flutter/material.dart';
-import '../../../models/visitor_access_log_model.dart';
+
 import '../../../core/theme/app_colors.dart';
+import '../../../models/visitor_access_log_model.dart';
 
 class VisitorAccessLogDetailScreen extends StatelessWidget {
   final VisitorAccessLogModel log;
 
-  const VisitorAccessLogDetailScreen({
-    super.key,
-    required this.log,
-  });
+  const VisitorAccessLogDetailScreen({super.key, required this.log});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,9 @@ class VisitorAccessLogDetailScreen extends StatelessWidget {
           children: [
             // Status Card
             Card(
-              color: color.withValues(alpha: 0.1),
+              color: Helpers.getCardBackgroundFromStatus(
+                isCheckIn ? Colors.green : Colors.orange,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(color: color.withValues(alpha: 0.3)),
@@ -114,12 +115,9 @@ class VisitorAccessLogDetailScreen extends StatelessWidget {
               _buildSectionCard(
                 title: 'Bảo vệ xử lý',
                 icon: Icons.security,
-                children: [
-                  _buildInfoRow('Tên bảo vệ', log.guardName!),
-                ],
+                children: [_buildInfoRow('Tên bảo vệ', log.guardName!)],
               ),
-            if (log.guardName != null)
-              const SizedBox(height: 16),
+            if (log.guardName != null) const SizedBox(height: 16),
 
             // Card/ID Info
             if (log.idCardHeldByGuard || log.accessCardNumber != null)
@@ -146,14 +144,10 @@ class VisitorAccessLogDetailScreen extends StatelessWidget {
                 title: 'Ghi chú',
                 icon: Icons.note,
                 children: [
-                  Text(
-                    log.note!,
-                    style: const TextStyle(fontSize: 14),
-                  ),
+                  Text(log.note!, style: const TextStyle(fontSize: 14)),
                 ],
               ),
-            if (log.note != null)
-              const SizedBox(height: 16),
+            if (log.note != null) const SizedBox(height: 16),
 
             // System Info Card
             _buildSectionCard(
@@ -176,9 +170,7 @@ class VisitorAccessLogDetailScreen extends StatelessWidget {
     required List<Widget> children,
   }) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -192,11 +184,7 @@ class VisitorAccessLogDetailScreen extends StatelessWidget {
                     color: AppColors.guardPrimary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
-                    icon,
-                    color: AppColors.guardPrimary,
-                    size: 20,
-                  ),
+                  child: Icon(icon, color: AppColors.guardPrimary, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -226,10 +214,7 @@ class VisitorAccessLogDetailScreen extends StatelessWidget {
             width: 120,
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
           ),
           Expanded(

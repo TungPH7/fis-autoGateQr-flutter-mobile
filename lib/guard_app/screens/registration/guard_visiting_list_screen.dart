@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../models/gate_access_registration_model.dart';
-import '../../../services/firestore_service.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/helpers.dart';
+import '../../../models/gate_access_registration_model.dart';
+import '../../../services/firestore_service.dart';
 import 'guard_registration_detail_screen.dart';
 
 class GuardVisitingListScreen extends StatefulWidget {
@@ -51,27 +52,17 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.people_outline,
-                    size: 80,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.people_outline, size: 80, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
                     'Không có khách đang viếng thăm',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Danh sách này hiển thị những người đã check-in\nvà chưa check-out',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[500],
-                    ),
+                    style: TextStyle(fontSize: 13, color: Colors.grey[500]),
                   ),
                 ],
               ),
@@ -84,13 +75,13 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.1),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.2),
+                        color: Colors.green.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
@@ -112,10 +103,7 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
                         ),
                         const Text(
                           'Đã check-in và chưa check-out',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.green,
-                          ),
+                          style: TextStyle(fontSize: 12, color: Colors.green),
                         ),
                       ],
                     ),
@@ -150,19 +138,15 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Colors.green.withOpacity(0.3),
-          width: 1,
-        ),
+        side: BorderSide(color: Colors.green.withValues(alpha: 0.3), width: 1),
       ),
       child: InkWell(
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => GuardRegistrationDetailScreen(
-                registration: visitor,
-              ),
+              builder: (context) =>
+                  GuardRegistrationDetailScreen(registration: visitor),
             ),
           );
         },
@@ -215,7 +199,7 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
+                      color: Colors.green.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Row(
@@ -268,16 +252,12 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.05),
+                    color: Colors.green.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.login,
-                        size: 16,
-                        color: Colors.green,
-                      ),
+                      const Icon(Icons.login, size: 16, color: Colors.green),
                       const SizedBox(width: 8),
                       Text(
                         'Check-in: ${Helpers.formatDateTime(visitor.actualCheckInTime!)}',
@@ -305,13 +285,17 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
+                        color: Colors.orange.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.credit_card, size: 14, color: Colors.orange),
+                          Icon(
+                            Icons.credit_card,
+                            size: 14,
+                            color: Colors.orange,
+                          ),
                           SizedBox(width: 4),
                           Text(
                             'Giữ CCCD',
@@ -331,7 +315,7 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
@@ -366,10 +350,7 @@ class _GuardVisitingListScreenState extends State<GuardVisitingListScreen> {
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[700],
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey[700]),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

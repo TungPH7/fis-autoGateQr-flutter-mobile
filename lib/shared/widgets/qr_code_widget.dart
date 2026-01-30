@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/helpers.dart';
 
@@ -44,10 +45,7 @@ class QRCodeWidget extends StatelessWidget {
           if (title != null) ...[
             Text(
               title!,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
           ],
@@ -96,17 +94,13 @@ class QRCodeWidget extends StatelessWidget {
                   width: size,
                   height: size,
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
+                    color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.timer_off,
-                        color: Colors.white,
-                        size: 48,
-                      ),
+                      Icon(Icons.timer_off, color: Colors.white, size: 48),
                       SizedBox(height: 8),
                       Text(
                         'Mã QR đã hết hạn',
@@ -141,10 +135,7 @@ class QRCodeWidget extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     'Hết hạn: ${Helpers.formatDateTime(expiresAt!)}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.info,
-                    ),
+                    style: const TextStyle(fontSize: 13, color: AppColors.info),
                   ),
                 ],
               ),
@@ -162,11 +153,7 @@ class QRCodeWidget extends StatelessWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.warning,
-                    size: 16,
-                    color: AppColors.error,
-                  ),
+                  Icon(Icons.warning, size: 16, color: AppColors.error),
                   SizedBox(width: 8),
                   Text(
                     'Mã QR đã hết hạn',
@@ -203,9 +190,7 @@ class QRCodeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -238,10 +223,7 @@ class QRCodeDialog extends StatelessWidget {
             const Text(
               'Đưa mã này cho bảo vệ để quét khi vào cổng',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
             ),
           ],
         ),

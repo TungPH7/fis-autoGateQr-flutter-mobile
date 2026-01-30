@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../core/constants/app_constants.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/validators.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../shared/widgets/custom_text_field.dart';
-import '../../../core/utils/validators.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/constants/app_constants.dart';
 
 class GuardRegisterScreen extends StatefulWidget {
   const GuardRegisterScreen({super.key});
@@ -75,7 +76,7 @@ class _GuardRegisterScreenState extends State<GuardRegisterScreen> {
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: AppColors.guardPrimary.withOpacity(0.1),
+                    color: AppColors.guardPrimary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -104,7 +105,8 @@ class _GuardRegisterScreenState extends State<GuardRegisterScreen> {
                   hint: 'Nhập mã nhân viên bảo vệ',
                   textInputAction: TextInputAction.next,
                   prefixIcon: const Icon(Icons.badge_outlined),
-                  validator: (value) => Validators.required(value, 'Mã nhân viên'),
+                  validator: (value) =>
+                      Validators.required(value, 'Mã nhân viên'),
                 ),
                 const SizedBox(height: 16),
 

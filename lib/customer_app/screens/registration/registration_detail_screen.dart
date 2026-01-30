@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import '../../../models/registration_model.dart';
 import '../../../providers/registration_provider.dart';
 import '../../../shared/widgets/qr_code_widget.dart';
@@ -8,10 +9,7 @@ import '../../../shared/widgets/qr_code_widget.dart';
 class RegistrationDetailScreen extends StatelessWidget {
   final RegistrationModel registration;
 
-  const RegistrationDetailScreen({
-    super.key,
-    required this.registration,
-  });
+  const RegistrationDetailScreen({super.key, required this.registration});
 
   @override
   Widget build(BuildContext context) {
@@ -33,47 +31,48 @@ class RegistrationDetailScreen extends StatelessWidget {
           children: [
             _buildStatusCard(context),
             const SizedBox(height: 16),
-            _buildInfoSection(
-              context,
-              'Thông tin xe',
-              Icons.directions_car,
-              [
-                _buildInfoRow('Biển số xe', registration.plateNumber ?? 'N/A'),
-                _buildInfoRow('Loại xe', _getVehicleTypeText(registration.vehicleType)),
-              ],
-            ),
+            _buildInfoSection(context, 'Thông tin xe', Icons.directions_car, [
+              _buildInfoRow('Biển số xe', registration.plateNumber ?? 'N/A'),
+              _buildInfoRow(
+                'Loại xe',
+                _getVehicleTypeText(registration.vehicleType),
+              ),
+            ]),
             const SizedBox(height: 16),
-            _buildInfoSection(
-              context,
-              'Thông tin tài xế',
-              Icons.person,
-              [
-                _buildInfoRow('Họ tên', registration.driverInfo.name),
-                _buildInfoRow('Số điện thoại', registration.driverInfo.phone),
-                if (registration.driverInfo.license != null)
-                  _buildInfoRow('Số GPLX', registration.driverInfo.license!),
-                if (registration.driverInfo.idCard != null)
-                  _buildInfoRow('CMND/CCCD', registration.driverInfo.idCard!),
-              ],
-            ),
+            _buildInfoSection(context, 'Thông tin tài xế', Icons.person, [
+              _buildInfoRow('Họ tên', registration.driverInfo.name),
+              _buildInfoRow('Số điện thoại', registration.driverInfo.phone),
+              if (registration.driverInfo.license != null)
+                _buildInfoRow('Số GPLX', registration.driverInfo.license!),
+              if (registration.driverInfo.idCard != null)
+                _buildInfoRow('CMND/CCCD', registration.driverInfo.idCard!),
+            ]),
             const SizedBox(height: 16),
-            _buildInfoSection(
-              context,
-              'Thông tin đăng ký',
-              Icons.assignment,
-              [
-                _buildInfoRow('Mục đích', registration.visitPurpose),
-                if (registration.visitLocation != null)
-                  _buildInfoRow('Địa điểm', registration.visitLocation!),
-                _buildInfoRow('Ngày dự kiến', DateFormat('dd/MM/yyyy').format(registration.expectedDate)),
-                if (registration.expectedTimeFrom != null)
-                  _buildInfoRow('Giờ từ', DateFormat('HH:mm').format(registration.expectedTimeFrom!)),
-                if (registration.expectedTimeTo != null)
-                  _buildInfoRow('Giờ đến', DateFormat('HH:mm').format(registration.expectedTimeTo!)),
-                _buildInfoRow('Loại đăng ký', _getRegistrationTypeText(registration.registrationType)),
-              ],
-            ),
-            if (registration.cargoInfo != null && registration.cargoInfo!.description != null) ...[
+            _buildInfoSection(context, 'Thông tin đăng ký', Icons.assignment, [
+              _buildInfoRow('Mục đích', registration.visitPurpose),
+              if (registration.visitLocation != null)
+                _buildInfoRow('Địa điểm', registration.visitLocation!),
+              _buildInfoRow(
+                'Ngày dự kiến',
+                DateFormat('dd/MM/yyyy').format(registration.expectedDate),
+              ),
+              if (registration.expectedTimeFrom != null)
+                _buildInfoRow(
+                  'Giờ từ',
+                  DateFormat('HH:mm').format(registration.expectedTimeFrom!),
+                ),
+              if (registration.expectedTimeTo != null)
+                _buildInfoRow(
+                  'Giờ đến',
+                  DateFormat('HH:mm').format(registration.expectedTimeTo!),
+                ),
+              _buildInfoRow(
+                'Loại đăng ký',
+                _getRegistrationTypeText(registration.registrationType),
+              ),
+            ]),
+            if (registration.cargoInfo != null &&
+                registration.cargoInfo!.description != null) ...[
               const SizedBox(height: 16),
               _buildInfoSection(
                 context,
@@ -81,26 +80,34 @@ class RegistrationDetailScreen extends StatelessWidget {
                 Icons.inventory,
                 [
                   if (registration.cargoInfo!.description != null)
-                    _buildInfoRow('Mô tả', registration.cargoInfo!.description!),
+                    _buildInfoRow(
+                      'Mô tả',
+                      registration.cargoInfo!.description!,
+                    ),
                   if (registration.cargoInfo!.weight != null)
-                    _buildInfoRow('Trọng lượng', '${registration.cargoInfo!.weight} kg'),
+                    _buildInfoRow(
+                      'Trọng lượng',
+                      '${registration.cargoInfo!.weight} kg',
+                    ),
                   if (registration.cargoInfo!.containerNumber != null)
-                    _buildInfoRow('Số container', registration.cargoInfo!.containerNumber!),
+                    _buildInfoRow(
+                      'Số container',
+                      registration.cargoInfo!.containerNumber!,
+                    ),
                   if (registration.cargoInfo!.sealNumber != null)
-                    _buildInfoRow('Số seal', registration.cargoInfo!.sealNumber!),
+                    _buildInfoRow(
+                      'Số seal',
+                      registration.cargoInfo!.sealNumber!,
+                    ),
                 ],
               ),
             ],
-            if (registration.notes != null && registration.notes!.isNotEmpty) ...[
+            if (registration.notes != null &&
+                registration.notes!.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _buildInfoSection(
-                context,
-                'Ghi chú',
-                Icons.note,
-                [
-                  _buildInfoRow('', registration.notes!),
-                ],
-              ),
+              _buildInfoSection(context, 'Ghi chú', Icons.note, [
+                _buildInfoRow('', registration.notes!),
+              ]),
             ],
             if (registration.isApproved) ...[
               const SizedBox(height: 16),
@@ -112,34 +119,43 @@ class RegistrationDetailScreen extends StatelessWidget {
                   if (registration.approvedByName != null)
                     _buildInfoRow('Người duyệt', registration.approvedByName!),
                   if (registration.approvedAt != null)
-                    _buildInfoRow('Thời gian', DateFormat('dd/MM/yyyy HH:mm').format(registration.approvedAt!)),
+                    _buildInfoRow(
+                      'Thời gian',
+                      DateFormat(
+                        'dd/MM/yyyy HH:mm',
+                      ).format(registration.approvedAt!),
+                    ),
                   if (registration.qrExpiresAt != null)
-                    _buildInfoRow('QR hết hạn', DateFormat('dd/MM/yyyy HH:mm').format(registration.qrExpiresAt!)),
+                    _buildInfoRow(
+                      'QR hết hạn',
+                      DateFormat(
+                        'dd/MM/yyyy HH:mm',
+                      ).format(registration.qrExpiresAt!),
+                    ),
                 ],
               ),
             ],
-            if (registration.isRejected && registration.rejectionReason != null) ...[
+            if (registration.isRejected &&
+                registration.rejectionReason != null) ...[
               const SizedBox(height: 16),
-              _buildInfoSection(
-                context,
-                'Lý do từ chối',
-                Icons.cancel,
-                [
-                  _buildInfoRow('', registration.rejectionReason!),
-                ],
-              ),
+              _buildInfoSection(context, 'Lý do từ chối', Icons.cancel, [
+                _buildInfoRow('', registration.rejectionReason!),
+              ]),
             ],
             const SizedBox(height: 16),
-            _buildInfoSection(
-              context,
-              'Thời gian',
-              Icons.access_time,
-              [
-                _buildInfoRow('Tạo lúc', DateFormat('dd/MM/yyyy HH:mm').format(registration.createdAt)),
-                if (registration.updatedAt != null)
-                  _buildInfoRow('Cập nhật', DateFormat('dd/MM/yyyy HH:mm').format(registration.updatedAt!)),
-              ],
-            ),
+            _buildInfoSection(context, 'Thời gian', Icons.access_time, [
+              _buildInfoRow(
+                'Tạo lúc',
+                DateFormat('dd/MM/yyyy HH:mm').format(registration.createdAt),
+              ),
+              if (registration.updatedAt != null)
+                _buildInfoRow(
+                  'Cập nhật',
+                  DateFormat(
+                    'dd/MM/yyyy HH:mm',
+                  ).format(registration.updatedAt!),
+                ),
+            ]),
             const SizedBox(height: 24),
             if (registration.isApproved && registration.hasValidQR)
               SizedBox(
@@ -197,7 +213,7 @@ class RegistrationDetailScreen extends StatelessWidget {
     }
 
     return Card(
-      color: statusColor.withOpacity(0.1),
+      color: statusColor.withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -275,20 +291,13 @@ class RegistrationDetailScreen extends StatelessWidget {
           if (label.isNotEmpty) ...[
             SizedBox(
               width: 120,
-              child: Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
+              child: Text(label, style: const TextStyle(color: Colors.grey)),
             ),
           ],
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -325,7 +334,9 @@ class RegistrationDetailScreen extends StatelessWidget {
   }
 
   void _showQRDialog(BuildContext context) {
-    final qrData = context.read<RegistrationProvider>().getQRDataForDisplay(registration);
+    final qrData = context.read<RegistrationProvider>().getQRDataForDisplay(
+      registration,
+    );
     if (qrData == null) return;
 
     showDialog(

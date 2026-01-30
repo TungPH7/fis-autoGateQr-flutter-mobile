@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -23,7 +24,7 @@ class CCCDPhotoService {
       }
       return null;
     } catch (e) {
-      print('Error picking image: $e');
+      // print('Error picking image: $e');
       return null;
     }
   }
@@ -44,7 +45,7 @@ class CCCDPhotoService {
 
       return downloadUrl;
     } catch (e) {
-      print('Error uploading CCCD photo: $e');
+      // print('Error uploading CCCD photo: $e');
       return null;
     }
   }
@@ -56,7 +57,7 @@ class CCCDPhotoService {
       await ref.delete();
       return true;
     } catch (e) {
-      print('Error deleting photo: $e');
+      // print('Error deleting photo: $e');
       return false;
     }
   }

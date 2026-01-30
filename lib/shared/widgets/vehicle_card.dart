@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../models/vehicle_model.dart';
+
 import '../../core/theme/app_colors.dart';
+import '../../models/vehicle_model.dart';
 
 class VehicleCard extends StatelessWidget {
   final VehicleModel vehicle;
@@ -40,7 +41,9 @@ class VehicleCard extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: _getVehicleColor(vehicle.vehicleType).withOpacity(0.1),
+                  color: _getVehicleColor(
+                    vehicle.vehicleType,
+                  ).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -124,9 +127,16 @@ class VehicleCard extends StatelessWidget {
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, size: 20, color: AppColors.error),
+                            Icon(
+                              Icons.delete,
+                              size: 20,
+                              color: AppColors.error,
+                            ),
                             SizedBox(width: 8),
-                            Text('Xóa', style: TextStyle(color: AppColors.error)),
+                            Text(
+                              'Xóa',
+                              style: TextStyle(color: AppColors.error),
+                            ),
                           ],
                         ),
                       ),
@@ -142,11 +152,7 @@ class VehicleCard extends StatelessWidget {
                     color: Theme.of(context).colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 16,
-                  ),
+                  child: const Icon(Icons.check, color: Colors.white, size: 16),
                 ),
             ],
           ),
@@ -200,10 +206,6 @@ class VehicleSelectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return VehicleCard(
-      vehicle: vehicle,
-      isSelected: isSelected,
-      onTap: onTap,
-    );
+    return VehicleCard(vehicle: vehicle, isSelected: isSelected, onTap: onTap);
   }
 }

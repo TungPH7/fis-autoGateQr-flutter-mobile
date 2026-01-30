@@ -62,7 +62,6 @@ class Helpers {
     if (diff.inDays == 0) {
       final hours = diff.inHours;
       final minutes = diff.inMinutes % 60;
-      final seconds = diff.inSeconds % 60;
       final parts = <String>[];
 
       if (hours > 0) parts.add('$hours giờ');
