@@ -47,7 +47,7 @@ class _GuardRegistrationDetailScreenState
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -176,20 +176,22 @@ class _GuardRegistrationDetailScreenState
             const SizedBox(height: 16),
 
             // Check-in Button (if approved and not checked in yet)
-            if (_registration.isApproved && !_registration.hasCheckedIn)
+            if (_registration.isApproved && !_registration.hasCheckedIn) ...[
               _buildCheckInButton(),
-            if (_registration.isApproved && !_registration.hasCheckedIn)
               const SizedBox(height: 16),
+            ],
 
             // Check-out Button (if currently inside - checked in but not checked out)
-            if (_registration.isCurrentlyInside) _buildCheckOutButton(),
-            if (_registration.isCurrentlyInside) const SizedBox(height: 16),
+            if (_registration.isCurrentlyInside) ...[
+              _buildCheckOutButton(),
+              const SizedBox(height: 16),
+            ],
 
             // QR Code Card (if approved)
-            if (_registration.isApproved && _registration.qrCode != null)
+            if (_registration.isApproved && _registration.qrCode != null) ...[
               _buildQRCard(),
-            if (_registration.isApproved && _registration.qrCode != null)
               const SizedBox(height: 16),
+            ],
 
             // Personal Info Card
             _buildSectionCard(
@@ -261,7 +263,7 @@ class _GuardRegistrationDetailScreenState
             const SizedBox(height: 16),
 
             // Access Card Info (if issued)
-            if (_registration.accessCardIssued)
+            if (_registration.accessCardIssued) ...[
               _buildSectionCard(
                 title: 'Thẻ ra vào',
                 icon: Icons.credit_card,
@@ -275,7 +277,8 @@ class _GuardRegistrationDetailScreenState
                     _buildInfoRow('Mã thẻ', _registration.accessCardNumber!),
                 ],
               ),
-            if (_registration.accessCardIssued) const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ],
 
             // Time Info Card
             _buildSectionCard(
@@ -284,13 +287,12 @@ class _GuardRegistrationDetailScreenState
               children: [
                 _buildInfoRow('Loại đăng ký', _registration.accessTypeDisplay),
                 _buildInfoRow('Ngày', _registration.expectedDateDisplay),
-                _buildInfoRow('Thời gian', _registration.expectedTimeDisplay),
               ],
             ),
             const SizedBox(height: 16),
 
             // Vehicle Info Card (if has vehicle)
-            if (_registration.hasVehicle)
+            if (_registration.hasVehicle) ...[
               _buildSectionCard(
                 title: 'Phương tiện',
                 icon: _registration.vehicleType == 'car'
@@ -304,7 +306,8 @@ class _GuardRegistrationDetailScreenState
                   _buildInfoRow('Biển số', _registration.vehiclePlate ?? ''),
                 ],
               ),
-            if (_registration.hasVehicle) const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ],
 
             // Purpose Info Card
             _buildSectionCard(
@@ -325,7 +328,7 @@ class _GuardRegistrationDetailScreenState
             const SizedBox(height: 16),
 
             // Check-in/out Info (if has checked)
-            if (_registration.hasCheckedIn)
+            if (_registration.hasCheckedIn) ...[
               _buildSectionCard(
                 title: 'Lịch sử ra/vào',
                 icon: Icons.history,
@@ -350,7 +353,8 @@ class _GuardRegistrationDetailScreenState
                     ),
                 ],
               ),
-            if (_registration.hasCheckedIn) const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ],
 
             // System Info Card
             _buildSectionCard(
@@ -363,13 +367,6 @@ class _GuardRegistrationDetailScreenState
                   _buildInfoRow('Nguồn', 'Đăng ký bởi bảo vệ'),
                 if (_registration.isRegisteredByUser)
                   _buildInfoRow('Nguồn', 'Đăng ký qua app'),
-                if (_registration.approvedByName != null)
-                  _buildInfoRow('Duyệt bởi', _registration.approvedByName!),
-                if (_registration.approvedAt != null)
-                  _buildInfoRow(
-                    'Ngày duyệt',
-                    Helpers.formatDateTime(_registration.approvedAt!),
-                  ),
                 if (_registration.rejectionReason != null)
                   _buildInfoRow(
                     'Lý do từ chối',
@@ -385,8 +382,10 @@ class _GuardRegistrationDetailScreenState
   }
 
   Widget _buildCheckInButton() {
+    final cardColor = Helpers.getCardBackgroundFromStatus(Colors.green);
+
     return Card(
-      color: Colors.green.withValues(alpha: 0.1),
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.green.withValues(alpha: 0.3)),
@@ -435,8 +434,10 @@ class _GuardRegistrationDetailScreenState
   }
 
   Widget _buildCheckOutButton() {
+    final cardColor = Helpers.getCardBackgroundFromStatus(Colors.orange);
+
     return Card(
-      color: Colors.orange.withValues(alpha: 0.1),
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.orange.withValues(alpha: 0.3)),
@@ -547,7 +548,7 @@ class _GuardRegistrationDetailScreenState
       color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: statusColor.withOpacity(0.45)),
+        side: BorderSide(color: statusColor.withValues(alpha: 0.45)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -556,7 +557,7 @@ class _GuardRegistrationDetailScreenState
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.15),
+                color: statusColor.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(statusIcon, color: statusColor, size: 32),
@@ -579,7 +580,7 @@ class _GuardRegistrationDetailScreenState
                     statusDescription,
                     style: TextStyle(
                       fontSize: 13,
-                      color: statusColor.withOpacity(0.85),
+                      color: statusColor.withValues(alpha: 0.85),
                     ),
                   ),
                 ],
@@ -740,9 +741,10 @@ class _CheckOutDialogState extends State<_CheckOutDialog> {
           children: [
             // Visitor info
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(

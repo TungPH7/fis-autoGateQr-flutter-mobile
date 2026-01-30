@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../providers/auth_provider.dart';
-import '../../../models/notification_model.dart';
+
 import '../../../core/theme/app_colors.dart';
+import '../../../models/notification_model.dart';
+import '../../../providers/auth_provider.dart';
 
 class EmployeeNotificationsScreen extends StatefulWidget {
   const EmployeeNotificationsScreen({super.key});
@@ -24,9 +25,11 @@ class _EmployeeNotificationsScreenState
         .orderBy('createdAt', descending: true)
         .limit(50)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => NotificationModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => NotificationModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   Future<void> _markAsRead(String notificationId) async {
@@ -113,9 +116,12 @@ class _EmployeeNotificationsScreenState
               return PopupMenuButton<String>(
                 onSelected: (value) async {
                   if (value == 'mark_all_read') {
+                    final messenger = ScaffoldMessenger.of(context);
+
                     await _markAllAsRead(recipientId);
+
                     if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         const SnackBar(
                           content: Text('Đã đánh dấu tất cả là đã đọc'),
                         ),
@@ -144,9 +150,7 @@ class _EmployeeNotificationsScreenState
         builder: (context, authProvider, _) {
           final recipientId = authProvider.user?.uid;
           if (recipientId == null) {
-            return const Center(
-              child: Text('Vui lòng đăng nhập'),
-            );
+            return const Center(child: Text('Vui lòng đăng nhập'));
           }
 
           return StreamBuilder<List<NotificationModel>>(
@@ -161,7 +165,11 @@ class _EmployeeNotificationsScreenState
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                      Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Colors.red[300],
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         'Lỗi tải thông báo',
@@ -187,10 +195,7 @@ class _EmployeeNotificationsScreenState
                       const SizedBox(height: 16),
                       Text(
                         'Chưa có thông báo nào',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -232,9 +237,9 @@ class _EmployeeNotificationsScreenState
       ),
       onDismissed: (direction) {
         _deleteNotification(notification.id);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã xóa thông báo')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Đã xóa thông báo')));
       },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -301,10 +306,7 @@ class _EmployeeNotificationsScreenState
                       const SizedBox(height: 4),
                       Text(
                         notification.message,
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 13,
-                        ),
+                        style: TextStyle(color: Colors.grey[700], fontSize: 13),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -312,8 +314,11 @@ class _EmployeeNotificationsScreenState
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.person_outline,
-                                size: 14, color: Colors.grey[500]),
+                            Icon(
+                              Icons.person_outline,
+                              size: 14,
+                              color: Colors.grey[500],
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               notification.visitorName!,
@@ -330,8 +335,11 @@ class _EmployeeNotificationsScreenState
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.info_outline,
-                                size: 14, color: Colors.red[400]),
+                            Icon(
+                              Icons.info_outline,
+                              size: 14,
+                              color: Colors.red[400],
+                            ),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
@@ -350,10 +358,7 @@ class _EmployeeNotificationsScreenState
                       const SizedBox(height: 8),
                       Text(
                         _formatTime(notification.createdAt),
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
                       ),
                     ],
                   ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/theme/app_colors.dart';
 import '../../../models/visitor_access_log_model.dart';
 import '../../../services/firestore_service.dart';
-import '../../../core/theme/app_colors.dart';
 
 class GuardAccessHistoryScreen extends StatefulWidget {
   const GuardAccessHistoryScreen({super.key});
@@ -46,9 +47,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
             ),
           ),
           // List
-          Expanded(
-            child: _buildLogsList(),
-          ),
+          Expanded(child: _buildLogsList()),
         ],
       ),
     );
@@ -64,7 +63,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
           _selectedFilter = value;
         });
       },
-      selectedColor: AppColors.guardPrimary.withOpacity(0.2),
+      selectedColor: AppColors.guardPrimary.withValues(alpha: 0.2),
       checkmarkColor: AppColors.guardPrimary,
       labelStyle: TextStyle(
         color: isSelected ? AppColors.guardPrimary : Colors.grey[700],
@@ -119,18 +118,11 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.history,
-                  size: 80,
-                  color: Colors.grey[400],
-                ),
+                Icon(Icons.history, size: 80, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 Text(
                   'Chưa có lịch sử ra/vào',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -160,9 +152,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => _showLogDetail(log),
         borderRadius: BorderRadius.circular(12),
@@ -178,7 +168,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
+                      color: color.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -221,7 +211,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
+                          color: color.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -243,10 +233,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
                       ),
                       Text(
                         log.dateDisplay,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
                     ],
                   ),
@@ -278,10 +265,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
               // Additional info
               if (log.addressOrCompany != null) ...[
                 const SizedBox(height: 8),
-                _buildInfoItem(
-                  Icons.business_outlined,
-                  log.addressOrCompany!,
-                ),
+                _buildInfoItem(Icons.business_outlined, log.addressOrCompany!),
               ],
 
               // Badges
@@ -291,11 +275,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
                 runSpacing: 4,
                 children: [
                   if (log.idCardHeldByGuard)
-                    _buildBadge(
-                      Icons.credit_card,
-                      'Giữ CCCD',
-                      Colors.orange,
-                    ),
+                    _buildBadge(Icons.credit_card, 'Giữ CCCD', Colors.orange),
                   if (log.accessCardNumber != null)
                     _buildBadge(
                       Icons.badge,
@@ -303,11 +283,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
                       Colors.blue,
                     ),
                   if (log.guardName != null)
-                    _buildBadge(
-                      Icons.security,
-                      log.guardName!,
-                      Colors.purple,
-                    ),
+                    _buildBadge(Icons.security, log.guardName!, Colors.purple),
                 ],
               ),
             ],
@@ -325,10 +301,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[700],
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey[700]),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -341,7 +314,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
@@ -349,13 +322,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-            ),
-          ),
+          Text(text, style: TextStyle(fontSize: 12, color: color)),
         ],
       ),
     );
@@ -399,7 +366,7 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: (log.isCheckIn ? Colors.green : Colors.orange)
-                          .withOpacity(0.1),
+                          .withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -466,7 +433,8 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
 
               _buildDetailSection('Bảo vệ xử lý', [
                 _buildDetailRow('Bảo vệ', log.guardName ?? 'N/A'),
-                if (log.gateName != null) _buildDetailRow('Cổng', log.gateName!),
+                if (log.gateName != null)
+                  _buildDetailRow('Cổng', log.gateName!),
               ]),
             ],
           ),
@@ -481,18 +449,13 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(12),
-            child: Column(
-              children: children,
-            ),
+            child: Column(children: children),
           ),
         ),
       ],
@@ -509,19 +472,13 @@ class _GuardAccessHistoryScreenState extends State<GuardAccessHistoryScreen> {
             width: 120,
             child: Text(
               label,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             ),
           ),
         ],

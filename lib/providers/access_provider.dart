@@ -1,19 +1,20 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+
+import '../core/constants/app_constants.dart';
 import '../models/access_log_model.dart';
-import '../models/visitor_access_log_model.dart';
-import '../models/user_model.dart';
 import '../models/gate_model.dart';
+import '../models/user_model.dart';
+import '../models/visitor_access_log_model.dart';
 import '../services/firestore_service.dart';
 import '../services/qr_service.dart';
-import '../core/constants/app_constants.dart';
 
 /// Provider for managing access logs and check-in/check-out operations
 class AccessProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
 
   // State
-  String? _currentUserId;
   String? _currentUserPhone;
   String? _currentUserType; // 'employee', 'contractor', 'visitor'
   List<VisitorAccessLogModel> _accessHistory = [];
@@ -32,18 +33,25 @@ class AccessProvider extends ChangeNotifier {
 
   // Getters
   List<VisitorAccessLogModel> get accessHistory => _accessHistory;
+
   VisitorAccessLogModel? get lastAccessLog => _lastAccessLog;
+
   bool get isInside => _isInside;
+
   bool get isLoading => _isLoading;
+
   String? get errorMessage => _errorMessage;
+
   String? get successMessage => _successMessage;
+
   UserModel? get scannedUser => _scannedUser;
+
   QRValidationResult? get lastScanResult => _lastScanResult;
+
   String? get currentUserType => _currentUserType;
 
   /// Initialize for a user (employee/contractor/visitor side) with phone number and user type
   void initializeForUser(String userId, {String? phone, String? userType}) {
-    _currentUserId = userId;
     _currentUserPhone = phone;
     _currentUserType = userType;
     if (phone != null && phone.isNotEmpty) {
@@ -75,22 +83,22 @@ class AccessProvider extends ChangeNotifier {
           days: AppConstants.accessHistoryDays,
         )
         .listen(
-      (logs) {
-        _accessHistory = logs;
-        if (logs.isNotEmpty) {
-          _lastAccessLog = logs.first;
-          _updateInsideStatus();
-        } else {
-          _lastAccessLog = null;
-          _isInside = false;
-        }
-        notifyListeners();
-      },
-      onError: (e) {
-        _errorMessage = 'Không thể tải lịch sử ra/vào';
-        notifyListeners();
-      },
-    );
+          (logs) {
+            _accessHistory = logs;
+            if (logs.isNotEmpty) {
+              _lastAccessLog = logs.first;
+              _updateInsideStatus();
+            } else {
+              _lastAccessLog = null;
+              _isInside = false;
+            }
+            notifyListeners();
+          },
+          onError: (e) {
+            _errorMessage = 'Không thể tải lịch sử ra/vào';
+            notifyListeners();
+          },
+        );
   }
 
   /// Check current inside/outside status by phone
@@ -143,7 +151,9 @@ class AccessProvider extends ChangeNotifier {
       }
 
       // Get user from Firestore
-      final user = await _firestoreService.getUserById(validationResult.userId!);
+      final user = await _firestoreService.getUserById(
+        validationResult.userId!,
+      );
 
       if (user == null) {
         _isLoading = false;
@@ -353,7 +363,6 @@ class AccessProvider extends ChangeNotifier {
   /// Clear all and cancel subscriptions
   void clear() {
     _historySubscription?.cancel();
-    _currentUserId = null;
     _currentUserPhone = null;
     _currentUserType = null;
     _accessHistory = [];

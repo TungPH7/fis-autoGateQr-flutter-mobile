@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/helpers.dart';
+import '../../../core/utils/validators.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/gate_access_provider.dart';
+import '../../../shared/widgets/cccd_photo_picker.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../shared/widgets/custom_text_field.dart';
-import '../../../shared/widgets/cccd_photo_picker.dart';
-import '../../../core/utils/validators.dart';
-import '../../../core/utils/helpers.dart';
-import '../../../core/theme/app_colors.dart';
 
 class GuardManualRegistrationScreen extends StatefulWidget {
   const GuardManualRegistrationScreen({super.key});
@@ -98,24 +99,6 @@ class _GuardManualRegistrationScreenState
     }
   }
 
-  Future<void> _selectTime(bool isFrom) async {
-    final time = await showTimePicker(
-      context: context,
-      initialTime: isFrom
-          ? (_expectedTimeFrom ?? TimeOfDay.now())
-          : (_expectedTimeTo ?? const TimeOfDay(hour: 17, minute: 0)),
-    );
-    if (time != null) {
-      setState(() {
-        if (isFrom) {
-          _expectedTimeFrom = time;
-        } else {
-          _expectedTimeTo = time;
-        }
-      });
-    }
-  }
-
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -189,7 +172,8 @@ class _GuardManualRegistrationScreenState
           ? _noteController.text.trim()
           : null,
       idCardHeldByGuard: _idCardHeldByGuard,
-      accessCardNumber: _issueAccessCard && _accessCardController.text.trim().isNotEmpty
+      accessCardNumber:
+          _issueAccessCard && _accessCardController.text.trim().isNotEmpty
           ? _accessCardController.text.trim()
           : null,
       accessCardIssued: _issueAccessCard,
@@ -232,11 +216,16 @@ class _GuardManualRegistrationScreenState
                 decoration: BoxDecoration(
                   color: AppColors.guardPrimary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.guardPrimary.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: AppColors.guardPrimary.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, color: AppColors.guardPrimary),
+                    const Icon(
+                      Icons.info_outline,
+                      color: AppColors.guardPrimary,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -292,6 +281,18 @@ class _GuardManualRegistrationScreenState
               ),
               const SizedBox(height: 12),
 
+              // Email
+              CustomTextField(
+                controller: _emailController,
+                label: 'Email *',
+                hint: 'Nhập email',
+                keyboardType: TextInputType.emailAddress,
+                prefixIcon: const Icon(Icons.email_outlined),
+                textInputAction: TextInputAction.next,
+                validator: Validators.email,
+              ),
+              const SizedBox(height: 24),
+
               // Phone
               CustomTextField(
                 controller: _phoneController,
@@ -301,6 +302,17 @@ class _GuardManualRegistrationScreenState
                 prefixIcon: const Icon(Icons.phone_outlined),
                 textInputAction: TextInputAction.next,
                 validator: Validators.phone,
+              ),
+              const SizedBox(height: 12),
+
+              // Địa chỉ/Công ty
+              CustomTextField(
+                controller: _addressOrCompanyController,
+                label: 'Địa chỉ / Tên công ty',
+                hint: 'Nhập địa chỉ hoặc tên công ty',
+                prefixIcon: const Icon(Icons.business_outlined),
+                textInputAction: TextInputAction.next,
+                maxLines: 2,
               ),
               const SizedBox(height: 12),
 
@@ -343,28 +355,6 @@ class _GuardManualRegistrationScreenState
                 activeColor: Colors.orange,
               ),
               const SizedBox(height: 12),
-
-              // Địa chỉ/Công ty
-              CustomTextField(
-                controller: _addressOrCompanyController,
-                label: 'Địa chỉ / Tên công ty',
-                hint: 'Nhập địa chỉ hoặc tên công ty',
-                prefixIcon: const Icon(Icons.business_outlined),
-                textInputAction: TextInputAction.next,
-                maxLines: 2,
-              ),
-              const SizedBox(height: 12),
-
-              // Email
-              CustomTextField(
-                controller: _emailController,
-                label: 'Email',
-                hint: 'Nhập email (tùy chọn)',
-                keyboardType: TextInputType.emailAddress,
-                prefixIcon: const Icon(Icons.email_outlined),
-                textInputAction: TextInputAction.next,
-              ),
-              const SizedBox(height: 24),
 
               // ===== THẺ RA VÀO =====
               _buildSectionTitle('Thẻ ra vào'),
@@ -418,16 +408,6 @@ class _GuardManualRegistrationScreenState
               SegmentedButton<String>(
                 segments: const [
                   ButtonSegment(
-                    value: 'entry',
-                    label: Text('Vào'),
-                    icon: Icon(Icons.login, size: 18),
-                  ),
-                  ButtonSegment(
-                    value: 'exit',
-                    label: Text('Ra'),
-                    icon: Icon(Icons.logout, size: 18),
-                  ),
-                  ButtonSegment(
                     value: 'both',
                     label: Text('Ra/Vào'),
                     icon: Icon(Icons.swap_horiz, size: 18),
@@ -438,7 +418,6 @@ class _GuardManualRegistrationScreenState
                   setState(() => _accessType = selected.first);
                 },
               ),
-              const SizedBox(height: 16),
 
               // Multiple days checkbox
               CheckboxListTile(
@@ -483,36 +462,6 @@ class _GuardManualRegistrationScreenState
                   ],
                 ],
               ),
-              const SizedBox(height: 12),
-
-              // Time selection
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTimeSelector(
-                      label: 'Giờ vào',
-                      time: _expectedTimeFrom,
-                      hint: 'Bây giờ',
-                      onTap: () => _selectTime(true),
-                      onClear: _expectedTimeFrom != null
-                          ? () => setState(() => _expectedTimeFrom = null)
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildTimeSelector(
-                      label: 'Giờ ra',
-                      time: _expectedTimeTo,
-                      hint: 'Không giới hạn',
-                      onTap: () => _selectTime(false),
-                      onClear: _expectedTimeTo != null
-                          ? () => setState(() => _expectedTimeTo = null)
-                          : null,
-                    ),
-                  ),
-                ],
-              ),
               const SizedBox(height: 24),
 
               // ===== MỤC ĐÍCH =====
@@ -534,23 +483,6 @@ class _GuardManualRegistrationScreenState
                 label: 'Phòng ban đến làm việc',
                 hint: 'VD: Phòng kỹ thuật, Phòng nhân sự...',
                 prefixIcon: const Icon(Icons.meeting_room_outlined),
-              ),
-              const SizedBox(height: 12),
-
-              CustomTextField(
-                controller: _hostNameController,
-                label: 'Bạn sẽ làm việc với ai',
-                hint: 'Nhập tên người tiếp đón',
-                prefixIcon: const Icon(Icons.person_pin_outlined),
-              ),
-              const SizedBox(height: 12),
-
-              CustomTextField(
-                controller: _hostPhoneController,
-                label: 'SĐT người tiếp đón (nếu có)',
-                hint: 'Nhập số điện thoại',
-                keyboardType: TextInputType.phone,
-                prefixIcon: const Icon(Icons.phone_callback_outlined),
               ),
               const SizedBox(height: 24),
 
@@ -618,7 +550,9 @@ class _GuardManualRegistrationScreenState
                 decoration: BoxDecoration(
                   color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -677,10 +611,7 @@ class _GuardManualRegistrationScreenState
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -720,57 +651,6 @@ class _GuardManualRegistrationScreenState
               ),
             ),
             const Icon(Icons.chevron_right, color: Colors.grey),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTimeSelector({
-    required String label,
-    required TimeOfDay? time,
-    required String hint,
-    required VoidCallback onTap,
-    VoidCallback? onClear,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.access_time, color: AppColors.guardPrimary, size: 20),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  ),
-                  Text(
-                    time != null ? time.format(context) : hint,
-                    style: TextStyle(
-                      fontWeight: time != null ? FontWeight.w500 : FontWeight.normal,
-                      color: time != null ? null : Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (onClear != null)
-              GestureDetector(
-                onTap: onClear,
-                child: const Icon(Icons.clear, size: 18, color: Colors.grey),
-              )
-            else
-              const Icon(Icons.chevron_right, color: Colors.grey),
           ],
         ),
       ),

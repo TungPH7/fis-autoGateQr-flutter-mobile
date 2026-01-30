@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../core/theme/app_colors.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/gate_access_check_in_provider.dart';
 import '../../../shared/widgets/custom_button.dart';
-import '../../../core/theme/app_colors.dart';
 
 class GateAccessScanResultScreen extends StatefulWidget {
   const GateAccessScanResultScreen({super.key});
@@ -42,9 +43,7 @@ class _GateAccessScanResultScreenState
           final registration = provider.scannedRegistration;
 
           if (registration == null) {
-            return const Center(
-              child: Text('Không có thông tin'),
-            );
+            return const Center(child: Text('Không có thông tin'));
           }
 
           return SingleChildScrollView(
@@ -167,10 +166,7 @@ class _GateAccessScanResultScreenState
               children: [
                 const Text(
                   'Thông tin khách',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 _buildVisitorTypeBadge(registration.visitorType),
               ],
@@ -182,8 +178,9 @@ class _GateAccessScanResultScreenState
               children: [
                 CircleAvatar(
                   radius: 36,
-                  backgroundColor: _getVisitorTypeColor(registration.visitorType)
-                      .withValues(alpha: 0.1),
+                  backgroundColor: _getVisitorTypeColor(
+                    registration.visitorType,
+                  ).withValues(alpha: 0.1),
                   child: Icon(
                     _getVisitorTypeIcon(registration.visitorType),
                     size: 36,
@@ -205,10 +202,7 @@ class _GateAccessScanResultScreenState
                       const SizedBox(height: 4),
                       Text(
                         registration.phone,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 15,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 15),
                       ),
                     ],
                   ),
@@ -231,11 +225,7 @@ class _GateAccessScanResultScreenState
                 registration.addressOrCompany!,
               ),
             if (registration.email != null)
-              _buildInfoRow(
-                Icons.email,
-                'Email',
-                registration.email!,
-              ),
+              _buildInfoRow(Icons.email, 'Email', registration.email!),
 
             // Vehicle info
             if (registration.hasVehicle) ...[
@@ -264,7 +254,11 @@ class _GateAccessScanResultScreenState
                     Icons.badge,
                   ),
                 if (registration.isCurrentlyInside)
-                  _buildBadge('Đang trong nhà máy', Colors.green, Icons.location_on),
+                  _buildBadge(
+                    'Đang trong nhà máy',
+                    Colors.green,
+                    Icons.location_on,
+                  ),
               ],
             ),
           ],
@@ -284,10 +278,7 @@ class _GateAccessScanResultScreenState
           children: [
             const Text(
               'Thông tin đăng ký',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const Divider(height: 24),
 
@@ -306,11 +297,7 @@ class _GateAccessScanResultScreenState
               'Loại đăng ký',
               registration.accessTypeDisplay,
             ),
-            _buildInfoRow(
-              Icons.description,
-              'Mục đích',
-              registration.purpose,
-            ),
+            _buildInfoRow(Icons.description, 'Mục đích', registration.purpose),
             if (registration.visitDepartment != null)
               _buildInfoRow(
                 Icons.apartment,
@@ -367,20 +354,20 @@ class _GateAccessScanResultScreenState
           children: [
             const Text(
               'Chọn cổng',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: provider.selectedGate?.id,
+              initialValue: provider.selectedGate?.id,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.door_sliding_outlined),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 12,
+                ),
               ),
               hint: const Text('Chọn cổng'),
               isExpanded: true,
@@ -393,8 +380,8 @@ class _GateAccessScanResultScreenState
                         gate.gateType == 'in'
                             ? Icons.login
                             : gate.gateType == 'out'
-                                ? Icons.logout
-                                : Icons.swap_horiz,
+                            ? Icons.logout
+                            : Icons.swap_horiz,
                         size: 20,
                         color: AppColors.guardPrimary,
                       ),
@@ -433,10 +420,7 @@ class _GateAccessScanResultScreenState
           children: [
             const Text(
               'Tùy chọn bổ sung',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
@@ -445,7 +429,8 @@ class _GateAccessScanResultScreenState
               // Hold ID card option
               CheckboxListTile(
                 value: _holdIdCard,
-                onChanged: (value) => setState(() => _holdIdCard = value ?? false),
+                onChanged: (value) =>
+                    setState(() => _holdIdCard = value ?? false),
                 title: const Text('Giữ CCCD/CMND'),
                 subtitle: const Text('Bảo vệ giữ giấy tờ tùy thân'),
                 secondary: const Icon(Icons.credit_card, color: Colors.red),
@@ -614,10 +599,7 @@ class _GateAccessScanResultScreenState
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -723,31 +705,37 @@ class _GateAccessScanResultScreenState
   }
 
   Future<void> _performCheckIn(BuildContext context) async {
+    final navigator = Navigator.of(context);
     final provider = context.read<GateAccessCheckInProvider>();
-    final authProvider = context.read<AuthProvider>();
-    final user = authProvider.user;
+    final user = context.read<AuthProvider>().user;
 
     if (user == null) return;
+
+    final note = _noteController.text.isEmpty ? null : _noteController.text;
+
+    final accessCardNumber = _accessCardController.text.isEmpty
+        ? null
+        : _accessCardController.text;
 
     final success = await provider.performCheckIn(
       guardId: user.uid,
       guardName: user.fullName,
-      note: _noteController.text.isEmpty ? null : _noteController.text,
+      note: note,
       holdIdCard: _holdIdCard,
-      accessCardNumber: _accessCardController.text.isEmpty
-          ? null
-          : _accessCardController.text,
+      accessCardNumber: accessCardNumber,
     );
 
-    if (success && mounted) {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) {
-        Navigator.pop(context, true);
-      }
-    }
+    if (!success || !mounted) return;
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (!mounted) return;
+
+    navigator.pop(true);
   }
 
   Future<void> _performCheckOut(BuildContext context) async {
+    final navigator = Navigator.of(context);
     final provider = context.read<GateAccessCheckInProvider>();
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.user;
@@ -765,7 +753,7 @@ class _GateAccessScanResultScreenState
     if (success && mounted) {
       await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
-        Navigator.pop(context, true);
+        navigator.pop(true);
       }
     }
   }

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/helpers.dart';
+import '../../../core/utils/validators.dart';
 import '../../../models/vehicle_model.dart';
 import '../../../providers/vehicle_provider.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../shared/widgets/custom_text_field.dart';
-import '../../../core/utils/validators.dart';
-import '../../../core/utils/helpers.dart';
-import '../../../core/theme/app_colors.dart';
 
 class VehicleDetailScreen extends StatefulWidget {
   final VehicleModel vehicle;
@@ -43,10 +44,18 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   }
 
   void _initControllers() {
-    _plateNumberController = TextEditingController(text: widget.vehicle.plateNumber);
-    _driverNameController = TextEditingController(text: widget.vehicle.driverName);
-    _driverPhoneController = TextEditingController(text: widget.vehicle.driverPhone);
-    _driverLicenseController = TextEditingController(text: widget.vehicle.driverLicense ?? '');
+    _plateNumberController = TextEditingController(
+      text: widget.vehicle.plateNumber,
+    );
+    _driverNameController = TextEditingController(
+      text: widget.vehicle.driverName,
+    );
+    _driverPhoneController = TextEditingController(
+      text: widget.vehicle.driverPhone,
+    );
+    _driverLicenseController = TextEditingController(
+      text: widget.vehicle.driverLicense ?? '',
+    );
     _brandController = TextEditingController(text: widget.vehicle.brand ?? '');
     _colorController = TextEditingController(text: widget.vehicle.color ?? '');
     _vehicleType = widget.vehicle.vehicleType;
@@ -68,19 +77,25 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
 
     final provider = context.read<VehicleProvider>();
 
-    final success = await provider.updateVehicle(
-      widget.vehicle.id,
-      {
-        'plateNumber': _plateNumberController.text.trim().toUpperCase(),
-        'plateNumberNormalized': _plateNumberController.text.trim().toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), ''),
-        'vehicleType': _vehicleType,
-        'driverName': _driverNameController.text.trim(),
-        'driverPhone': _driverPhoneController.text.trim(),
-        'brand': _brandController.text.trim().isNotEmpty ? _brandController.text.trim() : null,
-        'color': _colorController.text.trim().isNotEmpty ? _colorController.text.trim() : null,
-        'driverLicense': _driverLicenseController.text.trim().isNotEmpty ? _driverLicenseController.text.trim() : null,
-      },
-    );
+    final success = await provider.updateVehicle(widget.vehicle.id, {
+      'plateNumber': _plateNumberController.text.trim().toUpperCase(),
+      'plateNumberNormalized': _plateNumberController.text
+          .trim()
+          .toUpperCase()
+          .replaceAll(RegExp(r'[^A-Z0-9]'), ''),
+      'vehicleType': _vehicleType,
+      'driverName': _driverNameController.text.trim(),
+      'driverPhone': _driverPhoneController.text.trim(),
+      'brand': _brandController.text.trim().isNotEmpty
+          ? _brandController.text.trim()
+          : null,
+      'color': _colorController.text.trim().isNotEmpty
+          ? _colorController.text.trim()
+          : null,
+      'driverLicense': _driverLicenseController.text.trim().isNotEmpty
+          ? _driverLicenseController.text.trim()
+          : null,
+    });
 
     if (success && mounted) {
       Helpers.showSuccessSnackBar(context, 'Cập nhật thành công');
@@ -131,51 +146,46 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
         children: [
           _buildStatusCard(),
           const SizedBox(height: 16),
-          _buildInfoSection(
-            'Thông tin xe',
-            Icons.directions_car,
-            [
-              _buildInfoRow('Biển số xe', widget.vehicle.plateNumber),
-              _buildInfoRow('Loại xe', VehicleModel.getVehicleTypeName(widget.vehicle.vehicleType)),
-              if (widget.vehicle.brand != null)
-                _buildInfoRow('Hãng xe', widget.vehicle.brand!),
-              if (widget.vehicle.color != null)
-                _buildInfoRow('Màu xe', widget.vehicle.color!),
-            ],
-          ),
+          _buildInfoSection('Thông tin xe', Icons.directions_car, [
+            _buildInfoRow('Biển số xe', widget.vehicle.plateNumber),
+            _buildInfoRow(
+              'Loại xe',
+              VehicleModel.getVehicleTypeName(widget.vehicle.vehicleType),
+            ),
+            if (widget.vehicle.brand != null)
+              _buildInfoRow('Hãng xe', widget.vehicle.brand!),
+            if (widget.vehicle.color != null)
+              _buildInfoRow('Màu xe', widget.vehicle.color!),
+          ]),
           const SizedBox(height: 16),
-          _buildInfoSection(
-            'Thông tin tài xế',
-            Icons.person,
-            [
-              _buildInfoRow('Họ tên', widget.vehicle.driverName),
-              _buildInfoRow('Số điện thoại', widget.vehicle.driverPhone),
-              if (widget.vehicle.driverLicense != null)
-                _buildInfoRow('Số GPLX', widget.vehicle.driverLicense!),
-              if (widget.vehicle.driverIdCard != null)
-                _buildInfoRow('CMND/CCCD', widget.vehicle.driverIdCard!),
-            ],
-          ),
+          _buildInfoSection('Thông tin tài xế', Icons.person, [
+            _buildInfoRow('Họ tên', widget.vehicle.driverName),
+            _buildInfoRow('Số điện thoại', widget.vehicle.driverPhone),
+            if (widget.vehicle.driverLicense != null)
+              _buildInfoRow('Số GPLX', widget.vehicle.driverLicense!),
+            if (widget.vehicle.driverIdCard != null)
+              _buildInfoRow('CMND/CCCD', widget.vehicle.driverIdCard!),
+          ]),
           if (widget.vehicle.companyName != null) ...[
             const SizedBox(height: 16),
-            _buildInfoSection(
-              'Công ty',
-              Icons.business,
-              [
-                _buildInfoRow('Tên công ty', widget.vehicle.companyName!),
-              ],
-            ),
+            _buildInfoSection('Công ty', Icons.business, [
+              _buildInfoRow('Tên công ty', widget.vehicle.companyName!),
+            ]),
           ],
           const SizedBox(height: 16),
-          _buildInfoSection(
-            'Thời gian',
-            Icons.access_time,
-            [
-              _buildInfoRow('Tạo lúc', DateFormat('dd/MM/yyyy HH:mm').format(widget.vehicle.createdAt)),
-              if (widget.vehicle.updatedAt != null)
-                _buildInfoRow('Cập nhật', DateFormat('dd/MM/yyyy HH:mm').format(widget.vehicle.updatedAt!)),
-            ],
-          ),
+          _buildInfoSection('Thời gian', Icons.access_time, [
+            _buildInfoRow(
+              'Tạo lúc',
+              DateFormat('dd/MM/yyyy HH:mm').format(widget.vehicle.createdAt),
+            ),
+            if (widget.vehicle.updatedAt != null)
+              _buildInfoRow(
+                'Cập nhật',
+                DateFormat(
+                  'dd/MM/yyyy HH:mm',
+                ).format(widget.vehicle.updatedAt!),
+              ),
+          ]),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -225,7 +235,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     }
 
     return Card(
-      color: statusColor.withOpacity(0.1),
+      color: statusColor.withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -259,7 +269,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(
@@ -316,10 +326,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
         children: [
           SizedBox(
             width: 120,
-            child: Text(
-              label,
-              style: const TextStyle(color: Colors.grey),
-            ),
+            child: Text(label, style: const TextStyle(color: Colors.grey)),
           ),
           Expanded(
             child: Text(
@@ -350,8 +357,16 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
               children: [
                 _buildVehicleTypeChip('car', 'Ô tô', Icons.directions_car),
                 _buildVehicleTypeChip('truck', 'Xe tải', Icons.local_shipping),
-                _buildVehicleTypeChip('container', 'Container', Icons.rv_hookup),
-                _buildVehicleTypeChip('motorcycle', 'Xe máy', Icons.two_wheeler),
+                _buildVehicleTypeChip(
+                  'container',
+                  'Container',
+                  Icons.rv_hookup,
+                ),
+                _buildVehicleTypeChip(
+                  'motorcycle',
+                  'Xe máy',
+                  Icons.two_wheeler,
+                ),
               ],
             ),
             const SizedBox(height: 24),
@@ -384,10 +399,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
             const SizedBox(height: 16),
             const Text(
               'Thông tin tài xế',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             CustomTextField(

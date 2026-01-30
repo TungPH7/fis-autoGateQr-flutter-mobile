@@ -1,10 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
+import '../../../core/theme/app_colors.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/check_in_provider.dart';
 import '../../../shared/widgets/custom_button.dart';
-import '../../../core/theme/app_colors.dart';
 
 class ScanResultScreen extends StatefulWidget {
   const ScanResultScreen({super.key});
@@ -36,9 +37,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
           final user = provider.scannedUser;
 
           if (user == null) {
-            return const Center(
-              child: Text('Không có thông tin'),
-            );
+            return const Center(child: Text('Không có thông tin'));
           }
 
           return SingleChildScrollView(
@@ -165,13 +164,13 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
               children: [
                 const Text(
                   'Thong tin nguoi dung',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: user.isContractor
                         ? Colors.orange.withValues(alpha: 0.1)
@@ -195,7 +194,9 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundColor: AppColors.guardPrimary.withValues(alpha: 0.1),
+                  backgroundColor: AppColors.guardPrimary.withValues(
+                    alpha: 0.1,
+                  ),
                   backgroundImage: user.photoUrl != null
                       ? CachedNetworkImageProvider(user.photoUrl!)
                       : null,
@@ -274,10 +275,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
           children: [
             const Text(
               'Lich su gan nhat',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const Divider(height: 24),
             Row(
@@ -344,10 +342,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
           children: [
             const Text(
               'Chon cong',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             if (provider.gates.isEmpty)
@@ -365,10 +360,14 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
                     label: Text(gate.gateName),
                     selected: isSelected,
                     onSelected: (_) => provider.selectGate(gate),
-                    selectedColor: AppColors.guardPrimary.withValues(alpha: 0.2),
+                    selectedColor: AppColors.guardPrimary.withValues(
+                      alpha: 0.2,
+                    ),
                     labelStyle: TextStyle(
                       color: isSelected ? AppColors.guardPrimary : Colors.black,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   );
                 }).toList(),
@@ -388,17 +387,16 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
           children: [
             const Text(
               'Thong tin bo sung',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
             // Temperature
             TextField(
               controller: _temperatureController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(
                 labelText: 'Nhiet do (tuy chon)',
                 hintText: '36.5',
@@ -535,10 +533,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               const SizedBox(height: 2),
               Text(
@@ -557,6 +552,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
   }
 
   Future<void> _performCheckIn(BuildContext context) async {
+    final navigator = Navigator.of(context);
     final checkInProvider = context.read<CheckInProvider>();
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.user;
@@ -578,12 +574,13 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
     if (success && mounted) {
       await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
-        Navigator.pop(context, true);
+        navigator.pop(true);
       }
     }
   }
 
   Future<void> _performCheckOut(BuildContext context) async {
+    final navigator = Navigator.of(context);
     final checkInProvider = context.read<CheckInProvider>();
     final authProvider = context.read<AuthProvider>();
     final user = authProvider.user;
@@ -599,7 +596,7 @@ class _ScanResultScreenState extends State<ScanResultScreen> {
     if (success && mounted) {
       await Future.delayed(const Duration(seconds: 1));
       if (mounted) {
-        Navigator.pop(context, true);
+        navigator.pop(true);
       }
     }
   }

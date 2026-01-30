@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/validators.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../shared/widgets/custom_button.dart';
 import '../../../shared/widgets/custom_text_field.dart';
-import '../../../core/utils/validators.dart';
-import '../../../core/theme/app_colors.dart';
 
 class GuardLoginScreen extends StatefulWidget {
   const GuardLoginScreen({super.key});
@@ -70,7 +71,7 @@ class _GuardLoginScreenState extends State<GuardLoginScreen> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: AppColors.guardPrimary.withOpacity(0.1),
+                    color: AppColors.guardPrimary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -84,10 +85,7 @@ class _GuardLoginScreenState extends State<GuardLoginScreen> {
                 // Title
                 const Text(
                   'Guard App',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),

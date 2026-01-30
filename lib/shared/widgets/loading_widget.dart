@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../../core/theme/app_colors.dart';
 
 class LoadingWidget extends StatelessWidget {
   final String? message;
   final Color? color;
 
-  const LoadingWidget({
-    super.key,
-    this.message,
-    this.color,
-  });
+  const LoadingWidget({super.key, this.message, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +23,7 @@ class LoadingWidget extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               message!,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-              ),
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ],
         ],
@@ -56,7 +51,7 @@ class LoadingOverlay extends StatelessWidget {
         child,
         if (isLoading)
           Container(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             child: LoadingWidget(message: message),
           ),
       ],

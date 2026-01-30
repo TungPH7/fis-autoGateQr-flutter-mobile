@@ -280,7 +280,7 @@ class _GuardWaitingCheckoutListScreenState
                       ),
                       Switch.adaptive(
                         value: tempOnlyToday,
-                        activeColor: AppColors.guardPrimary,
+                        activeThumbColor: AppColors.guardPrimary,
                         onChanged: (value) {
                           setModalState(() => tempOnlyToday = value);
                         },
